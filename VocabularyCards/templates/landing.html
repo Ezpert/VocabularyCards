@@ -1,10 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+{% load static %}
+
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet"   type="text/css" href="{% static 'css/landing.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+
 </head>
 <body>
+{% load my_filters %}
+    {% if cards %}
+
+
+    <div>
+                {% for card in cards %}
+            <div>
+                <h2>{{ card.word }}</h2>
+                 <ol>
+
+                    {% for definition in card.definitions.all %}
+                      <li>
+                        <p>
+                       {{ definition.definition_text|remove:"(for riveting)" }}
+
+                        </p>
+                          <p style="font-style: italic;">
+                        {{definition.sentence_use}}
+
+                          </p>
+                          </li>
+                    {% endfor %}
+
+                </ol>
+            </div>
+        {% endfor %}
+
+    </div>
+
+<!--    <form action= "{% url 'addCard'%}"  method="post">-->
+<!--        {% csrf_token %}-->
+<!--        {{f_form.as_p}}-->
+<!--        <input type="hidden" name="f_form" value="f_form">-->
+<!--        <button type="submit">Submit</button>-->
+<!--    </form>-->
+<form action= "{% url 'addCard'%}" method="post">
+        {% csrf_token %}
+        {{e_form.as_p}}
+         <input type="hidden" name="e_form" value="e_form">
+        <button type="submit">Submit</button>
+    </form>
+
+
+    {% else %}
+    <form action= "{% url 'addCard'%}"  method="post">
+        {% csrf_token %}
+        {{f_form.as_p}}
+        <input type="hidden" name="f_form" value="f_form">
+        <button type="submit">Submit</button>
+    </form>
+    <form action= "{% url 'addCard'%}" method="post">
+        {% csrf_token %}
+        {{e_form.as_p}}
+         <input type="hidden" name="e_form" value="e_form">
+        <button type="submit">Submit</button>
+    </form>
+
+
+    {% endif %}
+
 
 </body>
 </html>
