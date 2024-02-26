@@ -11,8 +11,8 @@ class Card(models.Model):
 
 class Definition(models.Model):
     card = models.ForeignKey(Card, on_delete=models.CASCADE, related_name='definitions')
-    definition_text = models.CharField(max_length=200)
-    sentence_use = models.CharField(max_length=200)
+    definition_text = models.CharField(max_length=200, default='Default definition text')
+    sentence_use = models.CharField(max_length=200, default='Default sentence use')
 
     def __str__(self):
         """String for representing the Model object."""
