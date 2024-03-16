@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% load my_filters %}
+
+
+
+
+
+    {% if cards %}
+
+     <form action="{% url 'home' %}" method="get">
+        <button type="submit"><--</button>
+
+    </form>
+
+
+    <div>
+                {% for card in cards %}
+            <div>
+                <h2>{{ card.word }}</h2>
+                 <ol>
+
+                    {% for definition in card.definitions.all %}
+                      <li>
+                        <p>
+                       {{ definition.definition_text|remove:"(for riveting)" }}
+
+                        </p>
+                          <p style="font-style: italic;">
+                        {{definition.sentence_use}}
+
+                          </p>
+                          </li>
+                    {% endfor %}
+
+
+
+
+                </ol>
+            </div>
+        {% endfor %}
+
+    </div>
+
+
+    {% else %}
+
+    <form action="{% url 'home' %}" method="get">
+        <button type="submit"><--</button>
+
+    </form>
+
+
+       <form action="{% url 'createPage' %}" method="get">
+        <button type="submit">Create Cards</button>
+    </form>
+    {% endif %}
+
+
+
+
+</body>
+</html>

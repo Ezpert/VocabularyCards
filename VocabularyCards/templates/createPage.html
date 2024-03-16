@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+    <form action="{% url 'home' %}" method="get">
+        <button type="submit"><--</button>
+
+    </form>
+
+    <form action= "{% url 'addCard'%}"  method="post">
+        {% csrf_token %}
+        {{f_form.as_p}}
+        <input type="hidden" name="f_form" value="f_form">
+        <button type="submit">Submit</button>
+    </form>
+    <form action= "{% url 'addCard'%}" method="post">
+        {% csrf_token %}
+        {{e_form.as_p}}
+         <input type="hidden" name="e_form" value="e_form">
+        <button type="submit">Submit</button>
+    </form>
+
+
+
+
+
+
+</body>
+</html>

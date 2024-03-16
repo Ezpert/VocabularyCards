@@ -6,11 +6,25 @@ import requests
 
 # Create your views here.
 def home(request):
+    # f_form = CardFullForm()
+    # e_form = CardEmptyForm()
+    # cards = Card.objects.all().order_by('word')
+
+    return render(request, 'landing.html')
+
+
+
+def viewCards(request):
+    cards = Card.objects.all().order_by('word')
+    return render(request, 'viewCards.html', {'cards': cards})
+
+def createPage(request):
     f_form = CardFullForm()
     e_form = CardEmptyForm()
-    cards = Card.objects.all().order_by('word')
+    return render(request, 'createPage.html', {'f_form': f_form, 'e_form': e_form})
 
-    return render(request, 'landing.html', {'f_form': f_form, 'e_form': e_form, 'cards': cards})
+
+
 
 
 def addCard(request):
@@ -42,15 +56,13 @@ def addCard(request):
             if form_e.is_valid():
 
                 # if the card is already in the database then get it from there.
-                new_card, created = Card.objects.get_or_create(
-                    word=form_e.cleaned_data['word']
-                )
+                new_card, created = Card.objects.get_or_create(word=form_e.cleaned_data['word'])
                 # if it was created then we save it to the database.
-                # if created:
-                #     new_card.save()
+                if created:
+                    new_card.save()
 
                 # Make a search for the definition of the word and using it in a sentence
-                url = f'https://wordsapiv1.p.mashape.com/words/{new_card.word}'
+                url = f'https://api.dictionaryapi.dev/api/v2/entries/en/{new_card.word}'
                 response = requests.get(url)
 
                 # if the request is successful
@@ -64,3 +76,5 @@ def addCard(request):
                 return redirect('home')
         else:
             return render(request, 'landing.html')
+
+
