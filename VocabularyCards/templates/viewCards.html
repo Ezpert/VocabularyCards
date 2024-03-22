@@ -5,11 +5,6 @@
     <title>Title</title>
 </head>
 <body>
-{% load my_filters %}
-
-
-
-
 
     {% if cards %}
 
@@ -17,37 +12,14 @@
         <button type="submit"><--</button>
 
     </form>
-
-
     <div>
                 {% for card in cards %}
             <div>
-                <h2>{{ card.word }}</h2>
-                 <ol>
-
-                    {% for definition in card.definitions.all %}
-                      <li>
-                        <p>
-                       {{ definition.definition_text|remove:"(for riveting)" }}
-
-                        </p>
-                          <p style="font-style: italic;">
-                        {{definition.sentence_use}}
-
-                          </p>
-                          </li>
-                    {% endfor %}
-
-
-
-
-                </ol>
+                <h2><a href="{% url 'viewCard' card_id=card.id %}">{{ card.word }}</a></h2>
             </div>
         {% endfor %}
 
     </div>
-
-
     {% else %}
 
     <form action="{% url 'home' %}" method="get">

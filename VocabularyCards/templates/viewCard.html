@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% load my_filters %}
+
+
+    {% if card %}
+
+     <form action="{% url 'viewCards' %}" method="get">
+        <button type="submit"><--</button>
+
+    </form>
+
+
+    <div>
+            <div>
+                <div style="display: flex; margin: 20px 0px 0px 0px;">
+
+                <h2 style="margin: 0px 20px 0px 10px;">{{ card.word }}</h2>
+                <form action="{% url 'deleteCard' card_id=card.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" style="margin: 5px 0px 0px 0px;">Delete Card</button>
+                </form>
+                 <form action="{% url 'editWordPage' card_id=card.id %}" method="get">
+                     {% csrf_token %}
+                        <button type="submit">Edit Word</button>
+
+                 </form>
+
+                </div>
+                 <ol>
+
+                    {% for definition in card.definitions.all %}
+                      <li>
+                        <p>
+                       {{ definition.definition_text|remove:"(for riveting)" }}
+
+                        </p>
+                          <p style="font-style: italic;">
+                        {{definition.sentence_use}}
+
+                          </p>
+                          </li>
+
+
+                     <form action="{% url 'deleteDef' def_id=definition.id %}" method="post">
+                         {% csrf_token %}
+                         <button type="submit"> Delete Definition</button>
+                     </form>
+                     <form action="{% url 'editDefPage' def_id=definition.id %}" method="get">
+                         {% csrf_token %}
+                         <button type="submit">Edit Definition</button>
+                     </form>
+
+
+                    {% endfor %}
+
+
+
+
+                </ol>
+            </div>
+
+    </div>
+
+
+    {% else %}
+
+
+     <form action="{% url 'home' %}" method="get">
+        <button type="submit"><--</button>
+
+    </form>
+
+
+       <form action="{% url 'createPage' %}" method="get">
+        <button type="submit">Create Cards</button>
+    </form>
+
+
+
+
+    {% endif %}
+
+
+
+
+</body>
+</html>

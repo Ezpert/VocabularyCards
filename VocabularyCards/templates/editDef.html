@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="{% url 'editDef' def_id=def.id %}" method="post">
+    {% csrf_token %}
+    {{ editForm.as_p }}
+    <input type="hidden" name="editForm" value="editForm">
+    <button type="submit">Submit</button>
+</form>
+
+
+
+</body>
+</html>

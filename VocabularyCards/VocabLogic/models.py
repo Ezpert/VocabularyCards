@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Card(models.Model):
-    word = models.CharField(max_length=200)
+    word = models.CharField(max_length=200, unique=True)
 
     def __str__(self):
         """String for representing the Model object."""
