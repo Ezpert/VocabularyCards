@@ -13,65 +13,17 @@
 
 </head>
 <body>
-{% load my_filters %}
-    {% if cards %}
 
 
-    <div>
-                {% for card in cards %}
-            <div>
-                <h2>{{ card.word }}</h2>
-                 <ol>
-
-                    {% for definition in card.definitions.all %}
-                      <li>
-                        <p>
-                       {{ definition.definition_text|remove:"(for riveting)" }}
-
-                        </p>
-                          <p style="font-style: italic;">
-                        {{definition.sentence_use}}
-
-                          </p>
-                          </li>
-                    {% endfor %}
-
-                </ol>
-            </div>
-        {% endfor %}
-
-    </div>
-
-<!--    <form action= "{% url 'addCard'%}"  method="post">-->
-<!--        {% csrf_token %}-->
-<!--        {{f_form.as_p}}-->
-<!--        <input type="hidden" name="f_form" value="f_form">-->
-<!--        <button type="submit">Submit</button>-->
-<!--    </form>-->
-<form action= "{% url 'addCard'%}" method="post">
-        {% csrf_token %}
-        {{e_form.as_p}}
-         <input type="hidden" name="e_form" value="e_form">
-        <button type="submit">Submit</button>
+    <form action="{% url 'createPage' %}" method="get">
+        <button type="submit">Create Cards</button>
     </form>
 
 
-    {% else %}
-    <form action= "{% url 'addCard'%}"  method="post">
-        {% csrf_token %}
-        {{f_form.as_p}}
-        <input type="hidden" name="f_form" value="f_form">
-        <button type="submit">Submit</button>
-    </form>
-    <form action= "{% url 'addCard'%}" method="post">
-        {% csrf_token %}
-        {{e_form.as_p}}
-         <input type="hidden" name="e_form" value="e_form">
-        <button type="submit">Submit</button>
+    <form action="{% url 'viewCards' %}" method="get">
+        <button type="submit"> View all Cards</button>
     </form>
 
-
-    {% endif %}
 
 
 </body>

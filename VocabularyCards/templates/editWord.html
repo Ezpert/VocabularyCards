@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+
+
+    <form action="{% url 'editWord' card_id=card.id%}" method="post">
+        {% csrf_token %}
+        {{ e_form.as_p }}
+        <input type="hidden" name="e_form" value="1">
+        <button type="submit">Submit</button>
+    </form>
+
+
+
+
+
+
+
+
+</body>
+</html>
