@@ -41,8 +41,11 @@
 
                         </p>
                           <p style="font-style: italic;">
-                        {{definition.sentence_use}}
-
+                              {% if definition.sentence_use and definition.sentence_use != "No example provided" %}
+                                "{{definition.sentence_use}}"
+                              {% elif definition.sentence_use == "No example provided" %}
+                                {{definition.sentence_use}}
+                              {% endif %}
                           </p>
                           </li>
 

@@ -59,31 +59,63 @@ def addCard(request):
 
                 return redirect('home')
         elif 'e_form' in request.POST:
-
             form_e = CardEmptyForm(request.POST)
             if form_e.is_valid():
-
-                # if the card is already in the database then get it from there.
-                new_card, created = Card.objects.get_or_create(word=form_e.cleaned_data['word'])
-                # if it was created then we save it to the database.
-                if created:
-                    new_card.save()
-
+                # Attempt to get or create the card
+                wordF = form_e.cleaned_data['word'].lower()
                 # Make a search for the definition of the word and using it in a sentence
-                url = f'https://api.dictionaryapi.dev/api/v2/entries/en/{new_card.word}'
+                url = f'https://api.dictionaryapi.dev/api/v2/entries/en/{wordF}'
                 response = requests.get(url)
 
                 # if the request is successful
                 if response.status_code == 200:
                     # Convert the response to JSON
+                    new_card, created = Card.objects.get_or_create(word=form_e.cleaned_data['word'].lower())
                     data = response.json()
-                    print(data)
-                else:
-                    print("Failed to fetch data from the URL.")
 
-                return redirect('home')
-        else:
-            return render(request, 'landing.html')
+                    definitions_and_examples = []
+                    for item in data:
+                        for meaning in item['meanings']:
+                            for definition in meaning['definitions']:
+                                definitions_and_examples.append({
+                                    'word': new_card.word.lower(),
+                                    'definition': definition['definition'],
+                                    'example': definition.get('example', 'No example provided')
+                                })
+
+                    # Only save the new_card if it was created and we have definitions and examples
+                    if created:
+                        print("Hello!")
+                        new_card.save()
+
+                    context = {'definitions_and_examples': definitions_and_examples}
+                    return render(request, 'wordSearch.html', context)
+
+                else:
+                    # Handle the case where the API request failed
+                    print("Failed to fetch data from the URL.")
+                    return redirect('createPage')
+            else:
+                return render(request, 'landing.html')
+
+
+def searchAdd(request, word, definition, example="No example provided"):
+    if request.method == 'POST':
+        word_lower = word.lower()
+        new_card, created = Card.objects.get_or_create(word=word_lower)
+
+        if created:
+            new_card.save()
+
+        definition = definition
+        example = example
+        new_def = Definition(card=new_card, definition_text=definition, sentence_use=example)
+
+        new_def.save()
+        return redirect('createPage')
+    else:
+        print("ERROR!!!!")
+        return redirect('createPage')
 
 
 def deleteCard(request, card_id):
@@ -153,21 +185,17 @@ def editDef(request, def_id):
 
         if 'editForm' in request.POST:
             editForm = EditDefForm(request.POST)
-
             if editForm.is_valid():
-                print("HEllo!")
                 definition.definition_text = editForm.cleaned_data['definition']
                 definition.sentence_use = editForm.cleaned_data['sentence']
                 definition.save()
                 return redirect('viewCard', card_id=c_id)
             else:
                 # If the form is not valid, re-render the form with errors
-                print("HEllo!")
+
                 print(editForm.errors)
                 return render(request, 'edit_definition.html', {'form': form_f})
         else:
-            print("HEllo!")
             return redirect('viewCard', card_id=c_id)
     else:
         return HttpResponse("Invalid request method", status=400)
-
