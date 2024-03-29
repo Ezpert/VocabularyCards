@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import CardEmptyForm, CardFullForm, EditDefForm
 from .models import Card, Definition
@@ -70,7 +70,7 @@ def addCard(request):
                 # if the request is successful
                 if response.status_code == 200:
                     # Convert the response to JSON
-                    new_card, created = Card.objects.get_or_create(word=form_e.cleaned_data['word'].lower())
+                    new_card = form_e.cleaned_data['word'].lower()
                     data = response.json()
 
                     definitions_and_examples = []
@@ -78,15 +78,12 @@ def addCard(request):
                         for meaning in item['meanings']:
                             for definition in meaning['definitions']:
                                 definitions_and_examples.append({
-                                    'word': new_card.word.lower(),
+                                    'word': new_card,
                                     'definition': definition['definition'],
                                     'example': definition.get('example', 'No example provided')
                                 })
 
                     # Only save the new_card if it was created and we have definitions and examples
-                    if created:
-                        print("Hello!")
-                        new_card.save()
 
                     context = {'definitions_and_examples': definitions_and_examples}
                     return render(request, 'wordSearch.html', context)
@@ -101,18 +98,33 @@ def addCard(request):
 
 def searchAdd(request, word, definition, example="No example provided"):
     if request.method == 'POST':
-        word_lower = word.lower()
-        new_card, created = Card.objects.get_or_create(word=word_lower)
+        if example != "No example provided":
+            print('hello!')
+            word_lower = word.lower()
+            new_card, created = Card.objects.get_or_create(word=word_lower)
 
-        if created:
-            new_card.save()
+            if created:
+                new_card.save()
 
-        definition = definition
-        example = example
-        new_def = Definition(card=new_card, definition_text=definition, sentence_use=example)
+            # Use get_or_create for the Definition model
+            new_def, created = Definition.objects.get_or_create(
+                card=new_card,
+                definition_text=definition,
+                sentence_use=example
+            )
 
-        new_def.save()
-        return redirect('createPage')
+            # If the definition was not created (meaning it already existed), you might want to handle this case
+            if not created:
+                print("Definition already exists.")
+                return redirect('createPage')
+            else:
+                new_def.save()
+
+            return redirect('createPage')
+        else:
+
+            return redirect('home')
+
     else:
         print("ERROR!!!!")
         return redirect('createPage')
@@ -147,28 +159,40 @@ def editWordPage(request, card_id):
 
 
 def editWord(request, card_id):
+    print("Request received")  # Debugging line
     if request.method == 'POST':
-        if 'e_form' in request.POST:
-            form_e = CardEmptyForm(request.POST)
-            if form_e.is_valid():
-                try:
-                    card = Card.objects.get(pk=card_id)
-                    card.word = form_e.cleaned_data['word'].lower()
-                    card.save()  # Save the changes to the database
-                    return redirect('viewCard', card_id=card_id)
-                except Card.DoesNotExist:
-                    # Handle the case where the Card object is not found
-                    return HttpResponse("Card not found", status=404)
-            else:
-                print(form_e.errors)
-                # Handle the case where the form is not valid
-                return redirect('viewCard', card_id=card_id)
+        card_id = request.POST.get('card-id')
+        def_id = request.POST.get('def-id')
+        print(def_id)
+        word_text = request.POST.get('word-text')
+        def_text = request.POST.get('def-text')
+        sentence = request.POST.get('sentence-use')
 
-        else:
-            return redirect('viewCard', card_id=card_id)
+        print(
+            f"Card ID: {card_id},"
+            f" Word Text: {word_text},"
+            f" Definition ID: {def_id}"
+            f", Definition: {def_text}, "
+            f"Sentence: {sentence}")
+
+        try:
+            card = Card.objects.get(pk=card_id)
+            card.word = word_text.lower()
+
+            definition = Definition.objects.get(pk=def_id)
+            definition.definition_text = word_text
+            definition.sentence_use = sentence
+
+            card.save()
+            definition.save()
+
+            return JsonResponse({'status': 'success'}, status=200)
+        except Definition.DoesNotExist:
+            return JsonResponse({'status': 'Definition not found'}, status=404)
+        except Card.DoesNotExist:
+            return JsonResponse({'status': 'Card not found'}, status=404)
     else:
-        # Handle the case where the request method is not POST
-        return HttpResponse("Invalid request method", status=400)
+        return HttpResponseNotAllowed(['POST'])
 
 
 def editDefPage(request, def_id):

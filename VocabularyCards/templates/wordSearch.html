@@ -32,11 +32,32 @@
                    <button type="submit">Add Word!</button>
                 </form>
             {% else %}
+
+
                 <p style="font-style:italic;">{{ item.example }}</p>
-                <form action="{% url 'searchAdd' word=item.word definition=item.definition example=item.example %}", method="post">
+                <form action="{% url 'searchAdd' word=item.word definition=item.definition example=item.example %}", method="post" onsubmit="return checkExample();">
                     {% csrf_token %}
                     <button type="submit">Add Word!</button>
                 </form>
+            NOTE TO SELF!! CREATE A MODAL HERE!!!!!!!!!!!!
+<!--                <script type="text/javascript">-->
+<!--        function checkExample() {-->
+<!--            var example = "{{ item.example }}";-->
+<!--            if (example === "No example provided") {-->
+<!--                var userChoice = window.confirm("No example provided. Would you like to enter an example or add the word without an example?");-->
+<!--                if (userChoice) {-->
+<!--                    // User chose to enter an example, redirect to a form or page where they can enter an example-->
+<!--                    // This part needs to be adjusted based on how you handle entering an example-->
+<!--                    return true; // Proceed with form submission-->
+<!--                } else {-->
+<!--                    // User chose to add without an example, cancel the form submission-->
+<!--                    return false; // Cancel form submission-->
+<!--                }-->
+<!--            } else {-->
+<!--                return true; // Proceed with form submission-->
+<!--            }-->
+<!--        }-->
+<!--    </script>-->
             {% endif %}
 
         </li>
