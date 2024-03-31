@@ -8,6 +8,7 @@ p,h2, button
     background: grey;
     width: 70%;
     margin: 0 auto;
+
 }
 
 .success {
@@ -16,6 +17,12 @@ p,h2, button
     padding: 10px;
     border: 1px solid green;
     margin-top: 20px;
+}
+
+.def-div
+{
+
+
 }
 
 #definitionCarousel {
@@ -28,12 +35,12 @@ p,h2, button
 #definitionCarousel ol {
     list-style-type: none;
     padding: 0;
+    min-height: 107px;
     margin: 0;
 }
 
 #definitionCarousel li {
     display: none;
-
     width: 100%;
 }
 
