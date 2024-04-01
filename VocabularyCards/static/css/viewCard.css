@@ -1,0 +1,49 @@
+p,h2, button
+{
+    font-family: Montserrat, Arial, serif;
+
+}
+.container
+{
+    background: grey;
+    width: 70%;
+    margin: 0 auto;
+
+}
+
+.success {
+    color: green;
+    font-weight: bold;
+    padding: 10px;
+    border: 1px solid green;
+    margin-top: 20px;
+}
+
+.def-div
+{
+
+
+}
+
+#definitionCarousel {
+    position: relative;
+    width: 100%;
+    max-width: 600px; /* Adjust as needed */
+
+}
+
+#definitionCarousel ol {
+    list-style-type: none;
+    padding: 0;
+    min-height: 107px;
+    margin: 0;
+}
+
+#definitionCarousel li {
+    display: none;
+    width: 100%;
+}
+
+#definitionCarousel li:first-child {
+    display: block;
+}
