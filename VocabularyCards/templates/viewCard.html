@@ -35,6 +35,7 @@
                     <h2 contenteditable="false" id="word-text" style="margin: 0px 20px 0px 10px;">{{ card.word }}</h2>
                     <button id="edit-btn">Edit</button>
                     <button id="submit-btn" style="display: none;">Save Changes</button>
+                    <button id="cancel-btn" style="display: none;"> Cancel! </button>
                 </div>
 
                 <div id="definitionCarousel">
@@ -46,7 +47,7 @@
                                 </p>
                                 <p contenteditable="false" id="sentence-use-{{ definition.id }}" style="font-style: italic;">
                                     {% if definition.sentence_use and definition.sentence_use != "No example provided" %}
-                                        "{{definition.sentence_use}}"
+                                        {{definition.sentence_use}}
                                     {% elif definition.sentence_use == "No example provided" %}
                                         {{definition.sentence_use}}
                                     {% endif %}
@@ -87,9 +88,13 @@
 
     document.addEventListener('DOMContentLoaded', function(){
         var definitions = document.querySelectorAll('#definitionCarousel li');
+
+
         var currentIndex = 0;
         var editingDef = false;
         var editButton = document.getElementById('edit-btn');
+        var originalWordText, originalDefinition, originalSentence;
+
 
 
 
@@ -148,10 +153,13 @@
                editingDef = true;
                var defId = document.getElementById('currentDefinitionId').value;
                var formattedId = defId.replace(/[^0-9]/g, "");
-
                var wordText = document.getElementById('word-text');
                var definition = document.getElementById('def-text-' + formattedId);
                var sentence = document.getElementById('sentence-use-' + formattedId);
+               originalWordText = wordText.textContent;
+               originalDefinition = definition.textContent;
+               originalSentence = sentence.textContent;
+
 
 
                if (wordText && definition && sentence) {
@@ -164,30 +172,56 @@
 
 
                editButton.style.display = editButton.style.display === 'none' ? 'inline' : 'none';
+               document.getElementById('cancel-btn').style.display = document.getElementById('cancel-btn').style.display === 'inline' ? 'none' : 'inline';
                document.getElementById('submit-btn').style.display = document.getElementById('submit-btn').style.display === 'inline' ? 'none' : 'inline';
 
 
            }
+           else if(event.target.matches('#cancel-btn')) {
 
+
+               editingDef = false;
+               var defId = document.getElementById('currentDefinitionId').value;
+               var formattedId = defId.replace(/[^0-9]/g, "");
+               var wordText = document.getElementById('word-text');
+               var definition = document.getElementById('def-text-' + formattedId);
+               var sentence = document.getElementById('sentence-use-' + formattedId);
+               wordText.textContent = originalWordText;
+               definition.textContent = originalDefinition;
+               sentence.textContent = originalSentence;
+
+
+               wordText.contentEditable = wordText.contentEditable === 'true' ? 'false' : 'true';
+               definition.contentEditable = definition.contentEditable === 'true' ? 'false' : 'true';
+               sentence.contentEditable = sentence.contentEditable === 'true' ? 'false' : 'true';
+               editButton.style.display = editButton.style.display === 'none' ? 'inline' : 'none';
+               document.getElementById('cancel-btn').style.display = document.getElementById('cancel-btn').style.display === 'inline' ? 'none' : 'inline';
+               document.getElementById('submit-btn').style.display = document.getElementById('submit-btn').style.display === 'inline' ? 'none' : 'inline';
+
+
+
+           }
            else if(event.target.matches('#submit-btn'))
            {
                var defId = document.getElementById('currentDefinitionId').value;
                var formattedId = defId.replace(/[^0-9]/g, "");
-
                var wordText = document.getElementById('word-text').textContent;
-               var definitionText = document.getElementById('def-text-' + formattedId).textContent;
-               var sentenceText = document.getElementById('sentence-use-' + formattedId).textContent;
 
+               //I was getting this error
+               // line 261, in query
+               //  _mysql.connection.query(self, query)
+               //  django.db.utils.DataError: (1406, "Data too long for column 'sentence_use' at row 1")
+               // Basically the .textContent was getting all the text from the paragraph including all the white space
+               // and when it was put into the database it would include all of the white space as well.
+               // So we used .replace(/\s+/g, ' ').trim() to remove all of the whitespace from the text so that
+               // essentially it only gets the text that we want and condenses it all down to something that we
+               // can easily put into the database without any issues.
 
-
-               console.log(definitionText);
-               console.log(sentenceText);
-
-
-
-               console.log(sentenceText);
+               var definitionText = document.getElementById('def-text-' + formattedId).textContent.replace(/\s+/g, ' ').trim();
+               var sentenceText = document.getElementById('sentence-use-' + formattedId).textContent.replace(/\s+/g, ' ').trim();
                var cardId = "{{ card.id }}";
-                console.log(cardId);
+
+
                $.ajax({
                    url: '/' + cardId + '/editWord/',
                    type: 'POST',
@@ -218,21 +252,15 @@
                         document.getElementById('def-text-' + formattedId).contentEditable = document.getElementById('def-text-' + formattedId).contentEditable === 'true' ? 'false' : 'true';
                         document.getElementById('sentence-use-' + formattedId).contentEditable = document.getElementById('sentence-use-' + formattedId).contentEditable === 'true' ? 'false' : 'true';
                         document.getElementById('edit-btn').style.display = document.getElementById('edit-btn').style.display === 'none' ? 'inline' : 'none';
+                        document.getElementById('cancel-btn').style.display = document.getElementById('cancel-btn').style.display === 'inline' ? 'none' : 'inline';
                         document.getElementById('submit-btn').style.display = document.getElementById('submit-btn').style.display === 'inline' ? 'none' : 'inline';
 
                     },
                     error: function(jqXHR, textStatus, errorThrown){
                        alert('There was a problem with the request: ' + textStatus + ' - ' + errorThrown);
                     }
-
                });
-
-
-
-
            }
-
-
         });
         showDefinition(currentIndex);
     })
