@@ -2,15 +2,12 @@ from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import CardEmptyForm, CardFullForm, EditDefForm
 from .models import Card, Definition
+from django.urls import reverse
 import requests
 
 
 # Create your views here.
 def home(request):
-    # f_form = CardFullForm()
-    # e_form = CardEmptyForm()
-    # cards = Card.objects.all().order_by('word')
-
     return render(request, 'landing.html')
 
 
@@ -133,9 +130,12 @@ def searchAdd(request, word, definition, example="No example provided"):
 def deleteCard(request, card_id):
     if request.method == 'POST':
         Card.objects.filter(pk=card_id).delete()
-        return redirect('viewCards')
+        redirect_url = reverse('viewCards')
+        response_data = {'redirect_url': redirect_url}
+
+        return JsonResponse(response_data)
     else:
-        return redirect('viewCards')
+        return HttpResponseNotAllowed(['POST'])
 
 
 def deleteDef(request, def_id):
@@ -149,13 +149,6 @@ def deleteDef(request, def_id):
             return redirect('viewCards')  # Redirect to 'viewCards' if the definition does not exist
     else:
         return redirect('viewCards')  # Redirect to 'viewCards' for non-POST requests
-
-
-def editWordPage(request, card_id):
-    card = Card.objects.get(pk=card_id)
-    e_form = CardEmptyForm()
-    # Was going to edit the cards and possibly be able to edit each definition.
-    return render(request, 'editWord.html', {'card': card, 'e_form': e_form})
 
 
 def editWord(request, card_id):
@@ -191,33 +184,3 @@ def editWord(request, card_id):
             return JsonResponse({'status': 'Card not found'}, status=404)
     else:
         return HttpResponseNotAllowed(['POST'])
-
-
-def editDefPage(request, def_id):
-    definition = Definition.objects.get(pk=def_id)
-    editForm = EditDefForm()
-    return render(request, 'editDef.html', {'def': definition, 'editForm': editForm})
-
-
-def editDef(request, def_id):
-    if request.method == 'POST':
-        definition = Definition.objects.get(pk=def_id)
-        c_id = definition.card.id
-        word_name = definition.card.word
-
-        if 'editForm' in request.POST:
-            editForm = EditDefForm(request.POST)
-            if editForm.is_valid():
-                definition.definition_text = editForm.cleaned_data['definition']
-                definition.sentence_use = editForm.cleaned_data['sentence']
-                definition.save()
-                return redirect('viewCard', card_id=c_id)
-            else:
-                # If the form is not valid, re-render the form with errors
-
-                print(editForm.errors)
-                return render(request, 'edit_definition.html', {'form': form_f})
-        else:
-            return redirect('viewCard', card_id=c_id)
-    else:
-        return HttpResponse("Invalid request method", status=400)

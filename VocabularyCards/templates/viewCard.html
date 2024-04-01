@@ -36,6 +36,7 @@
                     <button id="edit-btn">Edit</button>
                     <button id="submit-btn" style="display: none;">Save Changes</button>
                     <button id="cancel-btn" style="display: none;"> Cancel! </button>
+                    <button id="delete-btn" > delete! </button>
                 </div>
 
                 <div id="definitionCarousel">
@@ -96,6 +97,22 @@
         var originalWordText, originalDefinition, originalSentence;
 
 
+        function addQuotesToSentenceUse() {
+            var definitions = document.querySelectorAll('#definitionCarousel li');
+            definitions.forEach(function(definition) {
+                var sentenceUseElement = definition.querySelector('p[style="font-style: italic;"]');
+                if (sentenceUseElement) {
+                    var sentenceUseText = sentenceUseElement.textContent;
+                    // Check if the sentence use does not start and end with quotation marks
+                    if (!(sentenceUseText.startsWith('"') && sentenceUseText.endsWith('"'))) {
+                        // Add quotation marks around the sentence use
+                        sentenceUseElement.textContent = '"' + sentenceUseText + '"';
+                    }
+                }});
+        }
+
+
+
 
 
         function showDefinition(index){
@@ -109,6 +126,7 @@
                 } else {
                     definition.style.display = 'none';
                 }
+                addQuotesToSentenceUse();
             });
     // Update currentDefinitionId after the loop, using the ID of the definition that was shown
             document.getElementById('currentDefinitionId').value = shownDefinitionId;
@@ -254,13 +272,46 @@
                         document.getElementById('edit-btn').style.display = document.getElementById('edit-btn').style.display === 'none' ? 'inline' : 'none';
                         document.getElementById('cancel-btn').style.display = document.getElementById('cancel-btn').style.display === 'inline' ? 'none' : 'inline';
                         document.getElementById('submit-btn').style.display = document.getElementById('submit-btn').style.display === 'inline' ? 'none' : 'inline';
+                        addQuotesToSentenceUse();
 
                     },
                     error: function(jqXHR, textStatus, errorThrown){
                        alert('There was a problem with the request: ' + textStatus + ' - ' + errorThrown);
                     }
                });
+
            }
+           else if(event.target.matches('#delete-btn'))
+           {
+               var cardId = "{{ card.id }}";
+
+
+               $.ajax({
+                   url: '/deleteCard/' + cardId + '/',
+                   type: 'POST',
+                   data:{
+                       'card_id': cardId,
+                       'csrfmiddlewaretoken': '{{ csrf_token }}',
+                   },
+                   success: function(response)
+                   {
+                         if (response.redirect_url) {
+                            window.location.href = response.redirect_url;
+                         }
+
+                   },
+                   error: function(jqXHR, textStatus, errorThrown){
+                       alert('There was a problem with the request: ' + textStatus + ' - ' + errorThrown)
+                   }
+
+
+
+               })
+
+
+
+           }
+
         });
         showDefinition(currentIndex);
     })
