@@ -163,7 +163,6 @@ def editWord(request, card_id):
     if request.method == 'POST':
         card_id = request.POST.get('card-id')
         def_id = request.POST.get('def-id')
-        print(def_id)
         word_text = request.POST.get('word-text')
         def_text = request.POST.get('def-text')
         sentence = request.POST.get('sentence-use')
@@ -178,9 +177,8 @@ def editWord(request, card_id):
         try:
             card = Card.objects.get(pk=card_id)
             card.word = word_text.lower()
-
             definition = Definition.objects.get(pk=def_id)
-            definition.definition_text = word_text
+            definition.definition_text = def_text
             definition.sentence_use = sentence
 
             card.save()

@@ -57,7 +57,7 @@
                 </div>
 
 
-
+                <input type="hidden" id="currentDefinitionId" value="">
                     <button id="prevBtn">Previous</button>
                     <button id="nextBtn">Next</button>
             </div>
@@ -85,142 +85,155 @@
 
 <script>
 
-
-
-
-
-//
-//
-//
-//
-//
-//
-//    document.getElementById('submit-btn').addEventListener('click', function(){
-//        var wordText = document.getElementById('word-text').textContent;
-//        console.log(wordText)
-//        var defId = "{{ definition.id }}";
-//        var defText = document.getElementById('def-text-' + defId).textContent;
-//        console.log(defText)
-//        var sentenceText = document.getElementById('sentence-use-' + defId).textContent;
-//        console.log(sentenceText)
-//        var cardId = "{{ card.id }}";
-//
-//
-//        $.ajax({
-//        url:  '/' + cardId + '/editWord/',
-//        type: 'POST',
-//        data: {
-//            'card-id': cardId,
-//            'def-id': defId,
-//            'def-text': defText,
-//            'sentence-use': sentenceText,
-//            'word-text': wordText,
-//            'csrfmiddlewaretoken': '{{ csrf_token }}'
-//        },
-//            success: function(response) {
-//                var wordText = document.getElementById('word-text');
-//                var defText = document.getElementById('def-text');
-//                var sentenceText = document.getElementById('def-text');
-//                var editBtn = document.getElementById('edit-btn');
-//                var submitBtn = document.getElementById('submit-btn');
-//                var successMessageElement = document.getElementById('success-message');
-//
-//                // Set the success message text and make it visible
-//                successMessageElement.textContent = 'Saved Successfully!';
-//                successMessageElement.style.display = 'block';
-//
-//                // Add the 'success' class for styling
-//                successMessageElement.classList.add('success');
-//
-//                // Hide the success message after a delay
-//                setTimeout(function() {
-//                    successMessageElement.style.display = 'none';
-//                    successMessageElement.textContent = '';
-//                }, 3000);
-//
-//                // Toggle the display of the 'edit-btn' and 'submit-btn' buttons
-//                wordText.contentEditable = wordText.contentEditable === 'true' ? 'false' : 'true';
-//                defText.contentEditable = defText.contentEditable === 'true' ? 'false' : 'true';
-//                sentenceText.contentEditable = sentenceText.contentEditable === 'true' ? 'false' : 'true';
-//                editBtn.style.display = editBtn.style.display === 'none' ? 'inline' : 'none';
-//                submitBtn.style.display = submitBtn.style.display === 'none' ? 'inline' : 'none';
-//        },
-//        error: function(jqXHR, textStatus, errorThrown) {
-//            alert('There was a problem with the request: ' + textStatus + ' - ' + errorThrown);
-//        }
-//    });
-//
-//
-//    });
-//
-//    // document.getElementById('edit-btn').addEventListener('click',function(){
-//    //     var defId = "{{ definition.id }}";
-//    //     var wordText = document.getElementById('word-text');
-//    //     var defTexts = document.querySelectorAll('[id^="def-text-"]');
-//    //     // This variable uses document.querySelectorAll to select all elements whose IDs start with def-text-.
-//    //     // The ^= operator in the selector [id^="def-text-"] means "starts with".
-//    //     //     This is useful for selecting a group of elements that share a common pattern in their IDs.
-//    //     //     The method returns a NodeList, which is a collection of nodes, similar to an array.
-//    //     var sentenceTexts = document.querySelectorAll('[id^="sentence-use-"]');
-//    //
-//    //     wordText.contentEditable = wordText.contentEditable === 'false' ? 'true' : 'false';
-//    //      defTexts.forEach(function(defText) {
-//    //     defText.contentEditable = defText.contentEditable === 'false' ? 'true' : 'false';
-//    // });
-//    //
-//    // // Loop through all sentence use texts and toggle contentEditable
-//    // sentenceTexts.forEach(function(sentenceText) {
-//    //     sentenceText.contentEditable = sentenceText.contentEditable === 'false' ? 'true' : 'false';
-//    // });
-//    //
-//    //     this.style.display = this.style.display === 'none' ? 'inline' : 'none';
-//    //     document.getElementById('submit-btn').style.display = document.getElementById('submit-btn').style.display === 'none' ? 'inline' : 'none';
-//    //
-//    // });
-
     document.addEventListener('DOMContentLoaded', function(){
         var definitions = document.querySelectorAll('#definitionCarousel li');
         var currentIndex = 0;
+        var editingDef = false;
+        var editButton = document.getElementById('edit-btn');
+
+
 
         function showDefinition(index){
+            var shownDefinitionId; // Variable to store the ID of the definition that will be shown
+
             definitions.forEach(function(definition, i){
-                definition.style.display = i === index ? 'block' : 'none';
+                // Determine if this definition should be shown
+                if (i === index) {
+                    definition.style.display = 'block';
+                    shownDefinitionId = definition.id; // Store the ID of the definition that will be shown
+                } else {
+                    definition.style.display = 'none';
+                }
             });
+    // Update currentDefinitionId after the loop, using the ID of the definition that was shown
+            document.getElementById('currentDefinitionId').value = shownDefinitionId;
         }
 
         document.getElementById('definition-div').addEventListener('click', function(event){
            if(event.target.matches('#prevBtn')){
+
+               if(editingDef === false)
+               {
                console.log('Previous button clicked.');
                currentIndex = currentIndex > 0 ? currentIndex - 1 : definitions.length - 1;
                console.log(currentIndex);
                showDefinition(currentIndex);
+               var defId = document.getElementById('currentDefinitionId').value;
+               console.log("Updated ID: " + defId);
+
+               }
+               else
+               {
+                   alert("Please finish editing before switching!");
+               }
 
            }
            else if (event.target.matches('#nextBtn')){
-               console.log('Next button clicked.');
-               currentIndex = (currentIndex + 1) % definitions.length;
-               console.log(currentIndex);
-               showDefinition(currentIndex);
+               if (editingDef === false)
+               {
+                   console.log('Next button clicked.');
+                   currentIndex = (currentIndex + 1) % definitions.length;
+                   console.log(currentIndex);
+                   showDefinition(currentIndex);
+                   var defId = document.getElementById('currentDefinitionId').value;
+                   console.log("Updated ID: " + defId);
+               }else
+               {
+                   alert("Please finish editing before switching!");
+               }
+
            }
            else if(event.target.matches('#edit-btn'))
            {
-               var defId = "{{ definition.id }}";
-               console.log("ID: " + defId)
+               editingDef = true;
+               var defId = document.getElementById('currentDefinitionId').value;
+               var formattedId = defId.replace(/[^0-9]/g, "");
+
                var wordText = document.getElementById('word-text');
+               var definition = document.getElementById('def-text-' + formattedId);
+               var sentence = document.getElementById('sentence-use-' + formattedId);
+
+
+               if (wordText && definition && sentence) {
+                   wordText.contentEditable = wordText.contentEditable === 'false' ? 'true' : 'false';
+                   definition.contentEditable = definition.contentEditable === 'false' ? 'true' : 'false';
+                   sentence.contentEditable = sentence.contentEditable === 'false' ? 'true' : 'false';
+               } else {
+                   console.error('One or more elements could not be found.');
+               }
+
+
+               editButton.style.display = editButton.style.display === 'none' ? 'inline' : 'none';
+               document.getElementById('submit-btn').style.display = document.getElementById('submit-btn').style.display === 'inline' ? 'none' : 'inline';
+
+
+           }
+
+           else if(event.target.matches('#submit-btn'))
+           {
+               var defId = document.getElementById('currentDefinitionId').value;
+               var formattedId = defId.replace(/[^0-9]/g, "");
+
+               var wordText = document.getElementById('word-text').textContent;
+               var definitionText = document.getElementById('def-text-' + formattedId).textContent;
+               var sentenceText = document.getElementById('sentence-use-' + formattedId).textContent;
+
+
+
+               console.log(definitionText);
+               console.log(sentenceText);
+
+
+
+               console.log(sentenceText);
+               var cardId = "{{ card.id }}";
+                console.log(cardId);
+               $.ajax({
+                   url: '/' + cardId + '/editWord/',
+                   type: 'POST',
+                   data: {
+                       'card-id': cardId,
+                       'def-id': formattedId,
+                       'word-text': wordText,
+                       'def-text': definitionText,
+                       'sentence-use': sentenceText,
+                       'csrfmiddlewaretoken': '{{ csrf_token }}'
+                   },
+                    success: function(response){
+                        var successMessageElement = document.getElementById('success-message');
+
+                        successMessageElement.textContent = 'Saved Successfully!';
+                        successMessageElement.style.display = 'block';
+                        successMessageElement.classList.add('success');
+
+                        setTimeout(function(){
+                            successMessageElement.style.display = 'none';
+                            successMessageElement.textContent = '';
+
+                        }, 3000);
+
+
+                        editingDef = false;
+                        document.getElementById('word-text').contentEditable = document.getElementById('word-text').contentEditable === 'true' ? 'false' : 'true';
+                        document.getElementById('def-text-' + formattedId).contentEditable = document.getElementById('def-text-' + formattedId).contentEditable === 'true' ? 'false' : 'true';
+                        document.getElementById('sentence-use-' + formattedId).contentEditable = document.getElementById('sentence-use-' + formattedId).contentEditable === 'true' ? 'false' : 'true';
+                        document.getElementById('edit-btn').style.display = document.getElementById('edit-btn').style.display === 'none' ? 'inline' : 'none';
+                        document.getElementById('submit-btn').style.display = document.getElementById('submit-btn').style.display === 'inline' ? 'none' : 'inline';
+
+                    },
+                    error: function(jqXHR, textStatus, errorThrown){
+                       alert('There was a problem with the request: ' + textStatus + ' - ' + errorThrown);
+                    }
+
+               });
+
+
 
 
            }
 
 
-
         });
-
-
-
-
-
-
-
         showDefinition(currentIndex);
     })
 
