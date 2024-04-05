@@ -104,7 +104,7 @@
                 if (sentenceUseElement) {
                     var sentenceUseText = sentenceUseElement.textContent;
                     // Check if the sentence use does not start and end with quotation marks
-                    if (!(sentenceUseText.startsWith('"') && sentenceUseText.endsWith('"'))) {
+                    if (!(sentenceUseText.startsWith('"') && sentenceUseText.endsWith('"')) && !(sentenceUseText.length === 0)) {
                         // Add quotation marks around the sentence use
                         sentenceUseElement.textContent = '"' + sentenceUseText + '"';
                     }
