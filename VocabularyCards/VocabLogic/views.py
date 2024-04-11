@@ -171,7 +171,9 @@ def addCard(request):
                             for definition in meaning['definitions']:
                                 example = definition.get('example', 'No example provided')
                                 if example == 'No example provided':
-                                    example = ai_example(word=new_card, definition=definition['definition'])
+                                    print('Hello World!')
+                                    example = 'No example Provided'
+                                    #example = ai_example(word=new_card, definition=definition['definition'])
                                 definitions_and_examples.append({
                                     'word': new_card,
                                     'definition': definition['definition'],

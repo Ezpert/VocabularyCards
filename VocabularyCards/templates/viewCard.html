@@ -16,53 +16,53 @@
 
     <div class="container" >
 
-    {% if card %}
+        {% if card %}
 
-     <div id="success-message" style="display: none;">
+         <div id="success-message" style="display: none;">
 
-     </div>
+         </div>
 
-     <form action="{% url 'viewCards' %}" method="get">
-        <button type="submit"><--</button>
+         <form action="{% url 'viewCards' %}" method="get">
+            <button type="submit"><--</button>
 
-    </form>
+        </form>
 
 
-            <div class="def-div" id="definition-div">
+                <div class="def-div" id="definition-div">
 
-                <div style="display: flex; margin: 20px 0px 0px 0px;">
-                    <p id="card" style="display:none;">{{ card }}</p>
-                    <h2 contenteditable="false" id="word-text" style="margin: 0px 20px 0px 10px;">{{ card.word }}</h2>
-                    <button id="edit-btn">Edit</button>
-                    <button id="submit-btn" style="display: none;">Save Changes</button>
-                    <button id="cancel-btn" style="display: none;"> Cancel! </button>
-                    <button id="delete-btn" > delete! </button>
+                    <div style="display: flex; margin: 20px 0px 0px 0px;">
+                        <p id="card" style="display:none;">{{ card }}</p>
+                        <h2 contenteditable="false" id="word-text" style="margin: 0px 20px 0px 10px;">{{ card.word }}</h2>
+                        <button id="edit-btn">Edit</button>
+                        <button id="submit-btn" style="display: none;">Save Changes</button>
+                        <button id="cancel-btn" style="display: none;"> Cancel! </button>
+                        <button id="delete-btn" > delete! </button>
+                    </div>
+
+                    <div id="definitionCarousel">
+                        <ol>
+                            {% for definition in card.definitions.all %}
+                                <li id="definition-{{ definition.id }}" style="display: none;">
+                                    <p contenteditable="false" id="def-text-{{ definition.id }}">
+                                        {{ definition.definition_text|remove:"(for riveting)" }}
+                                    </p>
+                                    <p contenteditable="false" id="sentence-use-{{ definition.id }}" style="font-style: italic;">
+                                        {% if definition.sentence_use and definition.sentence_use != "No example provided" %}
+                                            {{definition.sentence_use}}
+                                        {% elif definition.sentence_use == "No example provided" %}
+                                            {{definition.sentence_use}}
+                                        {% endif %}
+                                    </p>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    </div>
+
+
+                    <input type="hidden" id="currentDefinitionId" value="">
+                        <button id="prevBtn">Previous</button>
+                        <button id="nextBtn">Next</button>
                 </div>
-
-                <div id="definitionCarousel">
-                    <ol>
-                        {% for definition in card.definitions.all %}
-                            <li id="definition-{{ definition.id }}" style="display: none;">
-                                <p contenteditable="false" id="def-text-{{ definition.id }}">
-                                    {{ definition.definition_text|remove:"(for riveting)" }}
-                                </p>
-                                <p contenteditable="false" id="sentence-use-{{ definition.id }}" style="font-style: italic;">
-                                    {% if definition.sentence_use and definition.sentence_use != "No example provided" %}
-                                        {{definition.sentence_use}}
-                                    {% elif definition.sentence_use == "No example provided" %}
-                                        {{definition.sentence_use}}
-                                    {% endif %}
-                                </p>
-                            </li>
-                        {% endfor %}
-                    </ol>
-                </div>
-
-
-                <input type="hidden" id="currentDefinitionId" value="">
-                    <button id="prevBtn">Previous</button>
-                    <button id="nextBtn">Next</button>
-            </div>
 
     </div>
 
