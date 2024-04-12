@@ -173,15 +173,13 @@ def addCard(request):
                                 if example == 'No example provided':
                                     print('Hello World!')
                                     example = 'No example Provided'
-                                    #example = ai_example(word=new_card, definition=definition['definition'])
+                                    # example = ai_example(word=new_card, definition=definition['definition'])
                                 definitions_and_examples.append({
                                     'word': new_card,
                                     'definition': definition['definition'],
                                     'example': example
 
                                 })
-
-                    # Only save the new_card if it was created and we have definitions and examples
 
                     context = {'definitions_and_examples': definitions_and_examples}
                     return render(request, 'wordSearch.html', context)
@@ -194,38 +192,42 @@ def addCard(request):
                 return render(request, 'landing.html')
 
 
-def searchAdd(request, word, definition, example="No example provided"):
+def searchAdd(request):
+    print("Request received")  # Debugging line
     if request.method == 'POST':
-        if example != "No example provided":
-            print('Pass')
-            word_lower = word.lower()
-            new_card, created = Card.objects.get_or_create(word=word_lower)
+        print('Method: POST')
+        word = request.POST.get('word')
+        definition = request.POST.get('definition')
+        sentence = request.POST.get('sentence')
 
+        print(f'Word: {word} Definition: {definition} Sentence: {sentence}')
+
+        try:
+
+            new_card, created = Card.objects.get_or_create(
+                word=word.lower()
+            )
             if created:
                 new_card.save()
 
-            # Use get_or_create for the Definition model
-            new_def, created = Definition.objects.get_or_create(
-                card=new_card,
+            new_def, createdDef = Definition.objects.get_or_create(
+                card_id=new_card.id,
                 definition_text=definition,
-                sentence_use=example
+                sentence_use=sentence
             )
 
-            # If the definition was not created (meaning it already existed), you might want to handle this case
-            if not created:
-                print("Definition already exists.")
-                return redirect('createPage')
-            else:
+            if createdDef:
+                new_def.sentence_use = sentence
                 new_def.save()
 
-            return redirect('createPage')
-        else:
-
-            return redirect('home')
-
+            return JsonResponse({'status': 'success'}, status=200)
+        except Definition.DoesNotExist:
+            return JsonResponse({'status': 'Definition not found'}, status=404)
+        except Card.DoesNotExist:
+            return JsonResponse({'status': 'Card not found'}, status=404)
     else:
-        print("ERROR!!!!")
-        return redirect('createPage')
+        print('Method: GET')
+        return HttpResponseNotAllowed(['POST'])
 
 
 def deleteCard(request, card_id):
