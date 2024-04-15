@@ -1,9 +1,114 @@
 from django.http import HttpResponse, JsonResponse, HttpResponseNotAllowed
 from django.shortcuts import render, redirect, get_object_or_404
+from openai import OpenAI
 from .forms import CardEmptyForm, CardFullForm, EditDefForm
 from .models import Card, Definition
 from django.urls import reverse
 import requests
+from django.core.cache import cache
+import os
+from dotenv import load_dotenv
+
+load_dotenv(override=True)  # take environment variables from .env.
+
+client = OpenAI(
+    base_url=os.getenv("OPENAI_API_BASE"),
+    api_key=os.getenv("OPENAI_API_KEY")
+)
+
+
+def chat_completion(
+        message,
+        model="gpt-4",
+        prompt="You are a helpful assistant.",
+        temperature=0,
+        messages=[],
+):
+    # Add the prompt to the messages list
+    if prompt is not None:
+        messages = [{"role": "system", "content": prompt}] + messages
+
+    if message is not None:
+        # Add the user's message to the messages list
+        messages += [{"role": "user", "content": message}]
+
+    # Make an API call to the OpenAI ChatCompletion endpoint with the model and messages
+
+    # Make an API call to the OpenAI ChatCompletion endpoint with the model and messages
+    completion = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        temperature=temperature
+    )
+
+    # Extract and return the AI's response from the API response
+    return completion.choices[0].message.content.strip()
+
+
+def ai_example(word=None, definition=None):
+    prompt = """
+
+        You are a Professional Dictionary. You are going to be given a word and a definition with no sentence example and you are
+    to make a sentence using the context of the definition. You MUST include the given Word in the sentence response, 
+    If you do not use it the example would be considered incorrect! You should respond with nothing but the sentence, meaning do not add
+    any other formatting besides the sentence string.
+    This is an example of a word and a definition that are without an example:
+    Word: ling 
+    Definition: Any of various marine food fish, of the genus Molva, resembling the cod
+    "No example provided"
+    
+    
+    These are correct examples:
+        Word: minion 
+        Definition: The smallest member of a batch or sample or the lower bound of a probability distribution
+        In the statistical analysis, the minion represented the lowest score in the entire data set.
+        
+        
+        Word: minion
+        Definition: A loyal servant of another, usually a more powerful being.
+        The archvillain deployed his minions to simultaneously rob every bank in the city.
+    
+    These are incorrect examples:
+        Word: minion
+        Definition: A period of minimum brightness or energy intensity (of a star).
+        The Maunder minimum of the Sun reportedly corresponded to a period of great cold on Earth.
+        Reason for being incorrect: The word was not used in the sentence, make sure to always include the word in the examples!
+        
+        Word: minion
+        Definition: The lowest limit.
+        We need a minimum of three staff members on duty at all time.
+        Reason for being incorrect: The word was not used in the sentence, make sure to always include the word in the examples!
+        
+        
+        Word: son
+        Definition: A male person who has such a close relationship with an older or otherwise more authoritative person that he can be regarded as a son of the other person.
+        "The young apprentice admired his mentor so much that he considered him a son +, a father figure in his life."
+        Reason for being incorrect: The sentence includes a random character i.e '+'. Do not include random characters inside the examples!
+        
+        Word: son
+        Definition: A male adopted person in relation to his adoptive parents.
+        "After years of longing for a child, they finally adopted a boy and proudly introduced him as their son+."
+        Reason for being incorrect: The sentence includes a random character i.e '+'. Do not include random characters inside the examples!
+        
+        Make sure that the responses given do not include a '+' inside of the sentence unless it makes sense grammatically!
+        
+    """
+    outputs = {}
+    message = f"Word: {word} + \n Definition: {definition}"
+    response = chat_completion(message, prompt=prompt, model='gpt-4')
+
+    print(response)
+    return response
+
+
+def makeSen(request):
+    if request.method == 'POST':
+        word_example = request.POST.get('word_example')
+        definition_example = request.POST.get('definition_example')
+        new_sentence = ai_example(word=word_example, definition=definition_example)
+        return JsonResponse({'new_sentence': new_sentence})
+    else:
+        return HttpResponseNotAllowed(['POST'])
 
 
 # Create your views here.
@@ -74,13 +179,16 @@ def addCard(request):
                     for item in data:
                         for meaning in item['meanings']:
                             for definition in meaning['definitions']:
+                                example = definition.get('example', 'No example provided')
+                                if example == 'No example provided':
+                                    example = 'No example Provided'
+                                    # example = ai_example(word=new_card, definition=definition['definition'])
                                 definitions_and_examples.append({
                                     'word': new_card,
                                     'definition': definition['definition'],
-                                    'example': definition.get('example', 'No example provided')
-                                })
+                                    'example': example
 
-                    # Only save the new_card if it was created and we have definitions and examples
+                                })
 
                     context = {'definitions_and_examples': definitions_and_examples}
                     return render(request, 'wordSearch.html', context)
@@ -93,38 +201,42 @@ def addCard(request):
                 return render(request, 'landing.html')
 
 
-def searchAdd(request, word, definition, example="No example provided"):
+def searchAdd(request):
+    print("Request received")  # Debugging line
     if request.method == 'POST':
-        if example != "No example provided":
-            print('hello!')
-            word_lower = word.lower()
-            new_card, created = Card.objects.get_or_create(word=word_lower)
+        print('Method: POST')
+        word = request.POST.get('word')
+        definition = request.POST.get('definition')
+        sentence = request.POST.get('sentence')
 
+        print(f'Word: {word} Definition: {definition} Sentence: {sentence}')
+
+        try:
+
+            new_card, created = Card.objects.get_or_create(
+                word=word.lower()
+            )
             if created:
                 new_card.save()
 
-            # Use get_or_create for the Definition model
-            new_def, created = Definition.objects.get_or_create(
-                card=new_card,
+            new_def, createdDef = Definition.objects.get_or_create(
+                card_id=new_card.id,
                 definition_text=definition,
-                sentence_use=example
+                sentence_use=sentence
             )
 
-            # If the definition was not created (meaning it already existed), you might want to handle this case
-            if not created:
-                print("Definition already exists.")
-                return redirect('createPage')
-            else:
+            if createdDef:
+                new_def.sentence_use = sentence
                 new_def.save()
 
-            return redirect('createPage')
-        else:
-
-            return redirect('home')
-
+            return JsonResponse({'status': 'success'}, status=200)
+        except Definition.DoesNotExist:
+            return JsonResponse({'status': 'Definition not found'}, status=404)
+        except Card.DoesNotExist:
+            return JsonResponse({'status': 'Card not found'}, status=404)
     else:
-        print("ERROR!!!!")
-        return redirect('createPage')
+        print('Method: GET')
+        return HttpResponseNotAllowed(['POST'])
 
 
 def deleteCard(request, card_id):
