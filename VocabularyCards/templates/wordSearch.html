@@ -36,13 +36,15 @@
                     {% endif %}
                     <li id="definition-{{ forloop.counter }}" style="display: none;" >
                         <p id="definition-text-{{ forloop.counter }}"> {{ item.definition }} </p>
-                        {% if item.example != "No example provided" %}
-                            <p id="definition-text-{{ forloop.counter }}-example" style="font-style:italic;">{{ item.example }}</p>
-                                 <input id="addWordBtn-{{ forloop.counter }}" type="image" src="{% static 'images/saveicon.png' %}" />
+                        {% if item.example == "No example Provided" %}
+                            <img id="loading-gif-two-{{ forloop.counter }}" src="{% static 'images/hourglass.gif'%}" style="display: inline; width: 50px; padding: 0px 0px 5px 0px;" >
+                            <img id="loading-gif-{{ forloop.counter }}" src="{% static 'images/duck.gif' %}" style="width: 50px; display: inline; ">
+                            <img id="loading-gif-two-copy-{{ forloop.counter }}" src="{% static 'images/hourglass.gif'%}" style="display: inline; width: 50px; padding: 0px 0px 5px 0px;" >
+                            <p id="definition-text-{{ forloop.counter }}-example" style="font-style:italic; display: none;">{{ item.example }}</p>
                         {% else %}
-                            <p class="example" id="definition-text-{{ forloop.counter }}-nexample" style="font-style:italic;">{{ item.example }}</p>
-                            <button id="naddWordBtn"type="submit">Add Word!</button>
+                            <p id="definition-text-{{ forloop.counter }}-nexample" style="font-style:italic;">{{ item.example }}</p>
                         {% endif %}
+                            <input id="addWordBtn-{{ forloop.counter }}" type="image" src="{% static 'images/saveicon.png' %}" style="display: block;"/>
                     </li>
                 {% endfor %}
             </ol>
@@ -64,6 +66,7 @@
         var definitions = document.querySelectorAll('#definitionCarousel li')
         var currentIndex = 0;
 
+
            function addQuotesToSentenceUse() {
             var definitions = document.querySelectorAll('#definitionCarousel li');
             definitions.forEach(function(definition, index) {
@@ -79,7 +82,10 @@
         }
 
 
-        function fetchSentenceExample()
+
+
+
+        function makeSentence()
         {
             console.log('Sentence Example!');
             var definitionText = document.getElementById('definition-text-' + (currentIndex + 1)).textContent.replace(/\s+/g, ' ').trim();
@@ -87,6 +93,65 @@
             var word = document.getElementById('word').textContent.replace(/\s+/g, ' ').trim();
 
 
+
+            $.ajax({
+                url: '/makeSen/',
+                type: 'POST',
+                data: {
+                    'word_example': word,
+                    'definition_example': definitionText,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}',
+
+                },
+                success: function(response){
+
+
+                    console.log("Ajax Call: Success!");
+                    console.log(response.new_sentence);
+
+                    document.getElementById('loading-gif-' + (currentIndex + 1)).style.display = 'none';
+                    document.getElementById('loading-gif-two-' + (currentIndex + 1)).style.display = 'none';
+                    document.getElementById('loading-gif-two-copy-' + (currentIndex + 1)).style.display = 'none';
+                    console.log(document.getElementById('definition-text-' + (currentIndex + 1)  +'-example').textContent);
+                    document.getElementById('definition-text-' + (currentIndex + 1)  +'-example').textContent = response.new_sentence;
+                    document.getElementById('definition-text-' + (currentIndex + 1)  +'-example').style.display = 'block';
+                    addQuotesToSentenceUse();
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    alert('There was a problem with the request: ' + textStatus + ' - ' + errorThrown);
+                }
+
+
+            })
+
+
+
+        }
+
+        function checkConditionAndMakeAjaxCall(element) {
+               console.log('Condition Function called!');
+               var bool1 = element.style.display === 'block';
+               try{
+                   var sentence = document.getElementById('definition-text-' + (currentIndex + 1)  +'-example').textContent;
+
+               }catch(TypeError)
+               {
+                   console.log("Invalid Sentence Error Caught!")
+                   var sentence = document.getElementById('definition-text-' + (currentIndex + 1)  +'-nexample').textContent;
+
+               }
+
+               var bool2 = sentence === 'No example Provided' || sentence === '"No example Provided"';
+               console.log("Display === block: "+bool1);
+               console.log("Text is === 'No example Provided' : " + bool2);
+               console.log("Sentence: " + sentence);
+
+
+          if (bool1 && bool2) {
+              console.log('Condition Passed!');
+                makeSentence();
+            }
         }
 
         function showDef(index){
@@ -96,6 +161,8 @@
                 if(i === index){
                     definition.style.display = 'block';
                     shownDefinitionId = definition.id;
+                   checkConditionAndMakeAjaxCall(definition);
+
                 } else{
                     definition.style.display = 'none';
                 }
@@ -108,6 +175,7 @@
         document.getElementById('definitionDiv').addEventListener('click', function(event){
             if(event.target.matches('#prevBtn')){
                 console.log('Prev button Clicked');
+                console.log(currentIndex);
                 currentIndex = currentIndex > 0 ? currentIndex - 1 : definitions.length - 1;
                 console.log(currentIndex);
                 showDef(currentIndex);
@@ -120,9 +188,17 @@
 
             }else if(event.target.matches('#addWordBtn-' + (currentIndex + 1)) || event.target.matches('#naddWordBtn')){
                 console.log('Add word button Clicked');
-                var definitionText = document.getElementById('definition-text-' + (currentIndex + 1)).textContent.replace(/\s+/g, ' ').trim();
-                var sentence = document.getElementById('definition-text-' + (currentIndex + 1)  +'-example').textContent.replace(/\s+/g, ' ').trim().replace(/"/g, '');
                 var word = document.getElementById('word').textContent.replace(/\s+/g, ' ').trim();
+                var definitionText = document.getElementById('definition-text-' + (currentIndex + 1)).textContent.replace(/\s+/g, ' ').trim();
+                try{
+                   var sentence = document.getElementById('definition-text-' + (currentIndex + 1)  +'-example').textContent.replace(/\s+/g, ' ').trim().replace(/"/g, '');
+
+               }catch(TypeError)
+               {
+                   console.log("Invalid Sentence Error Caught!")
+                   var sentence = document.getElementById('definition-text-' + (currentIndex + 1)  +'-nexample').textContent.replace(/\s+/g, ' ').trim().replace(/"/g, '');
+
+               }
 
                 $.ajax({
                     url: '/searchAdd/',
@@ -131,7 +207,7 @@
                         'word': word,
                         'definition': definitionText,
                         'sentence': sentence,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        'csrfmiddlewaretoken': '{{ csrf_token }}',
                     },
                     success: function(response){
 

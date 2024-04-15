@@ -13,6 +13,8 @@ urlpatterns = [
     path('deleteCard/<int:card_id>/', views.deleteCard, name='deleteCard'),
     path('deleteDef/<int:def_id>/', views.deleteDef, name='deleteDef'),
     path('<int:card_id>/editWord/', views.editWord, name='editWord'),
+    path('makeSen/', views.makeSen, name='makeSen'),
+
 
 
 ]

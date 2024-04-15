@@ -101,6 +101,16 @@ def ai_example(word=None, definition=None):
     return response
 
 
+def makeSen(request):
+    if request.method == 'POST':
+        word_example = request.POST.get('word_example')
+        definition_example = request.POST.get('definition_example')
+        new_sentence = ai_example(word=word_example, definition=definition_example)
+        return JsonResponse({'new_sentence': new_sentence})
+    else:
+        return HttpResponseNotAllowed(['POST'])
+
+
 # Create your views here.
 def home(request):
     return render(request, 'landing.html')
@@ -171,7 +181,6 @@ def addCard(request):
                             for definition in meaning['definitions']:
                                 example = definition.get('example', 'No example provided')
                                 if example == 'No example provided':
-                                    print('Hello World!')
                                     example = 'No example Provided'
                                     # example = ai_example(word=new_card, definition=definition['definition'])
                                 definitions_and_examples.append({
