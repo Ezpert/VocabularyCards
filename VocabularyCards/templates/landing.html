@@ -15,14 +15,27 @@
 <body>
 
 
-    <form action="{% url 'createPage' %}" method="get">
-        <button type="submit">Create Cards</button>
-    </form>
+    <div class="container">
+
+        <h1 class="title">
+           Vocabulary Cards
+        </h1>
 
 
-    <form action="{% url 'viewCards' %}" method="get">
-        <button type="submit"> View all Cards</button>
-    </form>
+
+        <div class="form-div">
+        <form id="create-form"action="{% url 'createPage' %}" method="get">
+            <button class="button"type="submit">Create Cards</button>
+        </form>
+
+
+        <form id="view-form"action="{% url 'viewCards' %}" method="get">
+            <button class="button"type="submit"> View all Cards</button>
+        </form>
+        </div>
+
+    </div>
+
 
 
 
