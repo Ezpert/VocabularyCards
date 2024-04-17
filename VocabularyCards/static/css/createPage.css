@@ -1,0 +1,18 @@
+p, button{
+    font-family: Montserrat, Arial, serif;
+    color: whitesmoke;
+}
+
+html{
+    background: #002244;
+
+}
+
+.form-div {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    justify-items: center;
+    align-items: center;
+    height: 90svh;
+
+}
