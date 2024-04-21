@@ -10,9 +10,36 @@ html{
 
 .form-div {
     display: grid;
-    grid-template-columns: repeat(2,1fr);
+    grid-template-columns: repeat(2, 1fr);
     justify-items: center;
     align-items: center;
     height: 90svh;
 
 }
+.button,.back-button
+{
+    background: #4255ff;
+    border: none;
+    font-weight: 600;
+    padding: 0.8rem 2rem;
+    border-radius: 5px;
+    transition: all 0.1s ease-in;
+}
+.back-button
+{
+    padding: 0.4rem 1.3rem;
+
+}
+
+
+.button:hover, .back-button:hover
+{
+    background: #423ed8;
+    cursor: pointer;
+
+}
+.button:active, .back-button:active
+{
+    background: #14125c;
+}
+

@@ -16,24 +16,26 @@
 
 
     <form action="{% url 'home' %}" method="get">
-        <button type="submit"><--</button>
-
+        <button class="back-button" type="submit">
+              <input type="image" src="{% static 'images/home.svg'%}" style="width: 20px;">
+        </button>
     </form>
 
 
     <div class="form-div">
 
+
         <form action= "{% url 'addCard'%}"  method="post">
             {% csrf_token %}
             {{f_form.as_p}}
             <input type="hidden" name="f_form" value="f_form">
-            <button type="submit">Submit</button>
+            <button class="button" type="submit">Create</button>
         </form>
         <form action= "{% url 'addCard'%}" method="post">
             {% csrf_token %}
             {{e_form.as_p}}
              <input type="hidden" name="e_form" value="e_form">
-            <button type="submit">Submit</button>
+            <button class="button" type="submit">Submit</button>
         </form>
 
 
