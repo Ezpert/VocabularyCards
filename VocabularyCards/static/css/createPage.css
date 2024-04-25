@@ -16,6 +16,12 @@ html{
     height: 90svh;
 
 }
+.form-word
+{
+    color: red;
+
+}
+
 .button,.back-button
 {
     background: #4255ff;

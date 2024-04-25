@@ -28,6 +28,16 @@
         <form action= "{% url 'addCard'%}"  method="post">
             {% csrf_token %}
             {{f_form.as_p}}
+<!--            <p>-->
+<!--            <label>Word: </label>-->
+<!--            {{f_form.word}}-->
+<!--            </p>-->
+<!--            <label>Definition</label>-->
+<!--            {{ f_form.definition }}-->
+<!--            <label>Sentence</label>-->
+<!--            {{ f_form.sentence }}-->
+
+
             <input type="hidden" name="f_form" value="f_form">
             <button class="button" type="submit">Create</button>
         </form>
