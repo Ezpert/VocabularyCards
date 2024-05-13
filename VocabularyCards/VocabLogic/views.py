@@ -32,7 +32,8 @@ def chat_completion(
         # Add the user's message to the messages list
         messages += [{"role": "user", "content": message}]
 
-    # Make an API call to the OpenAI ChatCompletion endpoint with the model and messages
+    print (messages)
+
 
     # Make an API call to the OpenAI ChatCompletion endpoint with the model and messages
     completion = client.chat.completions.create(
@@ -42,7 +43,12 @@ def chat_completion(
     )
 
     # Extract and return the AI's response from the API response
-    return completion.choices[0].message.content.strip()
+    # Check if completion and completion.choices are not None
+    if completion is not None and completion.choices:
+        return completion.choices[0].message.content.strip()
+    else:
+        # Handle the case where completion or completion.choices is None
+        return "Error generating response."
 
 
 def ai_example(word=None, definition=None):
@@ -140,27 +146,37 @@ def createPage(request):
 
 def addCard(request):
     if request.method == 'POST':
-
+        print("Valid method!")
         if 'f_form' in request.POST:
 
+            print("Form f found!")
             form_f = CardFullForm(request.POST)
             if form_f.is_valid():
-                # Use get_or_create to find or create a Card instance with the word from the form
-                new_card, created = Card.objects.get_or_create(
-                    word=form_f.cleaned_data['word'].lower()
-                )
+                print("Valid form!")
+                try:
+                    print("Working!")
+                    # Use get_or_create to find or create a Card instance with the word from the form
+                    new_card, created = Card.objects.get_or_create(
+                        word=form_f.cleaned_data['word'].lower()
+                    )
 
-                # Create a new Card instance with the word from the form
-                if created:
-                    new_card.save()
+                    # Create a new Card instance with the word from the form
+                    if created:
+                        new_card.save()
 
-                definition_text = form_f.cleaned_data['definition']
-                sentence_use = form_f.cleaned_data['sentence']
-                new_definition = Definition(card=new_card, definition_text=definition_text, sentence_use=sentence_use)
-                new_definition.save()
+                    definition_text = form_f.cleaned_data['definition']
+                    sentence_use = form_f.cleaned_data['sentence']
+                    new_definition = Definition(card=new_card, definition_text=definition_text, sentence_use=sentence_use)
+                    new_definition.save()
+                    return JsonResponse({'status': 'success'}, status=200)
+                except Definition.DoesNotExist:
 
-                return redirect('home')
+                    return JsonResponse({'status': 'Definition not found'}, status=404)
+                except Card.DoesNotExist:
+                    return JsonResponse({'status': 'Card not found'}, status=404)
+
         elif 'e_form' in request.POST:
+            print("Form e found!")
             form_e = CardEmptyForm(request.POST)
             if form_e.is_valid():
                 # Attempt to get or create the card
@@ -199,7 +215,11 @@ def addCard(request):
                     return redirect('createPage')
             else:
                 return render(request, 'landing.html')
-
+        else:
+            print("Form f or e not found!")
+            return JsonResponse({'status': 'Form not found'}, status=404)
+    else:
+        return HttpResponseNotAllowed(['POST'])
 
 def searchAdd(request):
     print("Request received")  # Debugging line
