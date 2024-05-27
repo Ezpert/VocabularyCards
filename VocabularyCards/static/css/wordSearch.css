@@ -1,3 +1,43 @@
-p, button{
+p, form, button, label, input, h1, h2, h3, h4{
     font-family: Montserrat, Arial, serif;
+    color: whitesmoke;
 }
+html{
+    background: #002244;
+
+}
+
+
+.container-div
+{
+    display: flex;
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            height: 98vh; /* Full viewport height */
+            margin: 0; /* Remove default margin */
+}
+
+.back-button{
+    position: absolute;
+    top: 1svh;
+    left: 2svh;
+
+
+}
+
+.card-container-div
+{
+
+
+    position: absolute;
+}
+
+.card-info-div
+{
+    background: #586380;
+}
+
+
+
+
+

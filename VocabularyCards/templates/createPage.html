@@ -26,7 +26,7 @@
         </form>
 
 
-        <div id="success-message" style="display: none;"></div>
+        <div id="success-div"><p id="success-message">Saved Successfully!</p> <img id="success-image" src="{% static 'images/save.svg'%}"></div>
 
 
         <div class="form-div">
@@ -91,9 +91,16 @@
                     'sentence' : sentence,
                     'csrfmiddlewaretoken': '{{ csrf_token }}'
                 },
-                success(response)
-                {
-                    console.log("HELLO WORLD!");
+                success: function(response) {
+                    var successMessageElement = document.getElementById('success-div');
+                    var successPElement = document.getElementById('success-message');
+                    successPElement.textContent = 'Saved Successfully!';
+                    successMessageElement.style.display = 'flex';
+
+
+                    setTimeout(function() {
+                            successMessageElement.style.display = 'none';
+                    }, 3000);
                 },
                 error: function(jqXHR, textStatus, errorThrown)
                 {

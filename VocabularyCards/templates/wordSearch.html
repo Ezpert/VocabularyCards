@@ -13,10 +13,9 @@
 
 </head>
 <body>
-<div>
-    <form action="{% url 'createPage' %}" method="get">
+<div class="container-div">
+    <form class="back-button"action="{% url 'createPage' %}" method="get">
             <button type="submit"><--</button>
-
     </form>
 
     {% if definitions_and_examples %}
@@ -25,10 +24,9 @@
 
     </div>
 
+    <div id="definitionDiv" class="card-container-div">
 
-    <div id="definitionDiv">
-
-        <div id="definitionCarousel">
+        <div id="definitionCarousel" class="card-info-div">
 
             <ol style="padding-left: 20px;">
                 {% for item in definitions_and_examples %}
@@ -50,9 +48,9 @@
                 {% endfor %}
             </ol>
             <input type="hidden" id="currentDefinitionId" value="">
+        </div>
                 <button id="prevBtn">Previous</button>
                 <button id="nextBtn">Next</button>
-        </div>
     </div>
     {% else %}
         <p>Definitions not found!</p>
@@ -66,6 +64,7 @@
     document.addEventListener('DOMContentLoaded', function(){
         var definitions = document.querySelectorAll('#definitionCarousel li')
         var currentIndex = 0;
+        var currentDefinitionId = '';
 
 
            function addQuotesToSentenceUse() {
@@ -179,13 +178,19 @@
                 console.log(currentIndex);
                 currentIndex = currentIndex > 0 ? currentIndex - 1 : definitions.length - 1;
                 console.log(currentIndex);
-                showDef(currentIndex);
+                 if (currentDefinitionId !== definitions[currentIndex].id) {
+                    showDef(currentIndex);
+                    currentDefinitionId = definitions[currentIndex].id;
+                }
 
             }else if(event.target.matches('#nextBtn')){
                 console.log('Next button Clicked');
                 currentIndex = (currentIndex + 1) % definitions.length;
                 console.log(currentIndex);
-                showDef(currentIndex);
+                if (currentDefinitionId !== definitions[currentIndex].id) {
+                    showDef(currentIndex);
+                    currentDefinitionId = definitions[currentIndex].id;
+                }
 
             }else if(event.target.matches('#addWordBtn-' + (currentIndex + 1)) || event.target.matches('#naddWordBtn')){
                 console.log('Add word button Clicked');

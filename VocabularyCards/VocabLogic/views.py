@@ -19,7 +19,7 @@ client = OpenAI(
 
 def chat_completion(
         message,
-        model="gpt-4",
+        model="gpt-3.5-turbo",
         prompt="You are a helpful assistant.",
         temperature=0,
         messages=[],
@@ -32,8 +32,7 @@ def chat_completion(
         # Add the user's message to the messages list
         messages += [{"role": "user", "content": message}]
 
-    print (messages)
-
+    print(messages)
 
     # Make an API call to the OpenAI ChatCompletion endpoint with the model and messages
     completion = client.chat.completions.create(
@@ -45,6 +44,7 @@ def chat_completion(
     # Extract and return the AI's response from the API response
     # Check if completion and completion.choices are not None
     if completion is not None and completion.choices:
+        print("Completion is not none!")
         return completion.choices[0].message.content.strip()
     else:
         # Handle the case where completion or completion.choices is None
@@ -101,7 +101,8 @@ def ai_example(word=None, definition=None):
     """
     outputs = {}
     message = f"Word: {word} + \n Definition: {definition}"
-    response = chat_completion(message, prompt=prompt, model='gpt-4')
+    response = chat_completion(message, prompt=prompt, model='gpt-3.5-turbo')
+
 
     print(response)
     return response
@@ -166,7 +167,8 @@ def addCard(request):
 
                     definition_text = form_f.cleaned_data['definition']
                     sentence_use = form_f.cleaned_data['sentence']
-                    new_definition = Definition(card=new_card, definition_text=definition_text, sentence_use=sentence_use)
+                    new_definition = Definition(card=new_card, definition_text=definition_text,
+                                                sentence_use=sentence_use)
                     new_definition.save()
                     return JsonResponse({'status': 'success'}, status=200)
                 except Definition.DoesNotExist:
@@ -220,6 +222,7 @@ def addCard(request):
             return JsonResponse({'status': 'Form not found'}, status=404)
     else:
         return HttpResponseNotAllowed(['POST'])
+
 
 def searchAdd(request):
     print("Request received")  # Debugging line
