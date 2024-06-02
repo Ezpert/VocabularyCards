@@ -134,6 +134,17 @@ html{
 
 }
 
+.button:hover, .back-button:hover
+{
+    background: #423ed8;
+    cursor: pointer;
+
+}
+.button:active, .back-button:active
+{
+    background: #14125c;
+}
+
 #success-div {
     position: absolute;
     top: 20%;
@@ -166,14 +177,4 @@ html{
 
 
 
-.button:hover, .back-button:hover
-{
-    background: #423ed8;
-    cursor: pointer;
-
-}
-.button:active, .back-button:active
-{
-    background: #14125c;
-}
 
