@@ -68,22 +68,6 @@ html{
 
 }
 
-.w3-animate-left{
-    position:relative;
-    animation:animateleft 0.4s
-}
-@keyframes animateleft{
-    from{left:-300px;opacity:0}
-    to{left:0;opacity:1}
-}
-.w3-animate-right{
-    position:relative;
-    animation:animateright 0.4s
-}
-@keyframes animateright{
-    from{right:-300px;opacity:0}
-    to{right:0;opacity:1}
-}
 
 .card-info-div
 {
@@ -96,9 +80,40 @@ html{
 
 }
 
-.loading-bar-div
-{
-    background: #586380;
+
+.loading-bar-div {
+    background: none;
+    width: 200px;
+    height: 30px;
+    position: relative; /* Ensure the parent is positioned */
+    overflow: hidden; /* Hide overflow to ensure pseudo-elements are not visible outside */
+}
+
+.loading-bar-background {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), white, rgba(255, 255, 255, 0));
+    width: 150%;
+    height: 100%;
+    position: absolute; /* Position the background absolutely within the parent */
+    top: 0; /* Align the background to the top of the parent */
+    left: -100%; /* Start the background off-screen to the left */
+    animation: fadeInOut 0.8s infinite linear; /* Apply the animation */
+}
+
+/* Keyframes for fade-in from left and fade-out to right animation */
+@keyframes fadeInOut {
+    0% {
+        left: -100%;
+        opacity: 0;
+    }
+
+    50%{
+        opacity: 0.5;
+    }
+
+    100% {
+        left: 200%;
+        opacity: 0;
+    }
 }
 
 .ordered-list-div
@@ -114,21 +129,54 @@ html{
     padding: 20px 0px 0px 40px;
 }
 
+.addWordBtn
+{
+    background: none;
+    border: .125rem solid #586380;
+    border-radius: 10px;
+    height: 35px;
+    display: flex;
+    position: absolute;
+    bottom: 120px;
+    right: 70px;
+    align-items: center;
+    transition: 0.15s ease-in-out;
+
+}
+
+.hover-effect:hover {
+
+    background: rgba(88, 99, 128, 0.3);
+    cursor: pointer;
+
+}
+
+
+
+.addWordBtn-text
+{
+    pointer-events: none;
+    padding: 0px 10px 0px 10px;
+    margin: 0px 0px 0px 0px;
+}
+#addWordBtn-svg
+{
+    width: 16px;
+    height: 16px;
+    padding: 0px 0px 0px 5px;
+
+}
+
 .nav-buttons
 {
     background: none;
-    border: solid 2px #2e3856;
+    border: solid 2px #586380;
     border-radius: 50px;
     transition: 0.15s ease-in-out;
 
 }
 
-.nav-buttons:hover
-{
-    background: rgba(88, 99, 128, 0.3);
-    cursor: pointer;
 
-}
 
 #counter
 {

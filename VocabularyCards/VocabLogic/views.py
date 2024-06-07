@@ -57,7 +57,8 @@ def ai_example(word=None, definition=None):
         You are a Professional Dictionary. You are going to be given a word and a definition with no sentence example and you are
     to make a sentence using the context of the definition. You MUST include the given Word in the sentence response, 
     If you do not use it the example would be considered incorrect! You should respond with nothing but the sentence, meaning do not add
-    any other formatting besides the sentence string.
+    any other formatting besides the sentence string. 
+    # MAKE SURE TO INCLUDE AN EXAMPLE AND DO NOT SIMPLY REPLY WITH NO EXAMPLE PROVIDED
     This is an example of a word and a definition that are without an example:
     Word: ling 
     Definition: Any of various marine food fish, of the genus Molva, resembling the cod
@@ -96,8 +97,13 @@ def ai_example(word=None, definition=None):
         "After years of longing for a child, they finally adopted a boy and proudly introduced him as their son+."
         Reason for being incorrect: The sentence includes a random character i.e '+'. Do not include random characters inside the examples!
         
-        Make sure that the responses given do not include a '+' inside of the sentence unless it makes sense grammatically!
+        Word: mama
+        Definition: (hypocoristic, usually childish) Mother, female parent.
+        "No example provided"
         
+    
+        Make sure that the responses given do not include a '+' inside of the sentence unless it makes sense grammatically!
+        Make sure that all examples that you give have content and DO NOT REPLY WITH NO EXAMPLE PROVIDED!    
     """
     outputs = {}
     message = f"Word: {word} + \n Definition: {definition}"
