@@ -1,0 +1,189 @@
+p, button, label, input, h1, h2, h3, h4, h5{
+    font-family: Montserrat, Arial, serif;
+    color: whitesmoke;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+     transition: background-color 86400s ease-in-out 0s; /* Forces the background to be transparent */
+    -webkit-text-fill-color: whitesmoke !important; /* Sets the font color */
+    font-family: Montserrat, Arial, serif !important; /* Ensures the font family remains consistent */
+}
+input, label {
+    width: 100%;
+}
+html{
+    background: #002244;
+     height: 100vh; /* Full viewport height */
+}
+
+::-webkit-scrollbar{
+    width: 1px;
+}
+::-webkit-scrollbar-track {
+  background: none; /* Color of the track */
+}
+
+::-webkit-scrollbar-button:single-button {
+    display: block;
+    background: none no-repeat;
+    background-size: 50%;
+}
+
+/* Left arrow button */
+::-webkit-scrollbar-button:single-button:horizontal:decrement {
+    width: 22px;
+    background-position: center;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(40,46,62)'><polygon points='0,50 50,100 50,0'/></svg>");
+}
+
+/* Right arrow button */
+::-webkit-scrollbar-button:single-button:horizontal:increment {
+    width: 22px;
+    background-position: center;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(40,46,62)'><polygon points='0,0 0,100 50,50'/></svg>");
+}
+
+/* Customizing the thumb (draggable part) */
+::-webkit-scrollbar-thumb {
+  background-color: #282e3e; /* Color of the thumb */
+   /* Optional: Adds a border around the thumb */
+}
+
+
+
+.back-button
+{
+    background: #4255ff;
+    border: none;
+    font-weight: 600;
+
+    border-radius: 5px;
+    transition: all 0.1s ease-in;
+    padding: 0.4rem 1.3rem;
+}
+
+.back-button:hover
+{
+    background: #423ed8;
+    cursor: pointer;
+
+}
+.button:active, .back-button:active
+{
+    background: #14125c;
+}
+
+.header
+{
+    margin: 33svh 0px 0px 20px;
+}
+
+
+.card-info-div::after {
+    content: "";
+    position: absolute;
+    top: 410px;
+    right: 0;
+    bottom: 342px;
+    width: 60px; /* Adjust the width as needed */
+    pointer-events: none;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(0,34,68, 1) ,rgba(0,34,68, 1));
+}
+
+.ordered-list-div {
+    list-style-type: none;
+    display: grid;
+    gap: 1rem;
+    grid-auto-flow: column;
+    grid-auto-columns: min-content;
+    padding: 0px 2rem 2rem 1rem;
+
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+
+
+}
+
+.list-div
+{
+    background: #586380;
+    padding: 100px 200px 100px 200px;
+    border-radius: 1rem;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+
+
+}
+.list-div:hover
+{
+    border-bottom: 3px solid #a8b1ff;
+}
+
+.list-div:active
+{
+    outline: 3px solid #4255ff; /* Apply the border on active state */
+    outline-offset: -3px; /* Moves the outline inside the element */
+    z-index: 1; /* Ensures the outline appears above other elements */
+}
+
+.list-info-div
+{
+
+    position: absolute;
+    top: 1rem;
+    left: 1.5rem;
+}
+
+.list-word
+{
+    transition: 0.15s ease-in-out;
+}
+.list-word:hover {
+   opacity: 0.7;
+}
+
+.list-def
+{
+    background: #2e3856;
+    padding: 10px 20px 10px 20px;
+    border-radius: 20px;
+    transition: 0.15s ease-in-out;
+
+}
+
+
+.list-def:hover
+{
+    cursor: default;
+}
+.def-text
+{
+    margin: 0px 0px 0px 0px;
+    font-weight: 700;
+}
+.button
+{
+    position: absolute;
+    bottom: 1.5rem;
+    right: 2rem;
+    background: none;
+}
+
+.bar-div
+{
+    display: none;
+    position: absolute;
+    background: #a8b1ff;
+    bottom: 2px;
+    left: 7px;
+    width: 96%;
+    border-radius: 0px 0px 300px 300px;
+    height: 5px;
+
+
+}
+

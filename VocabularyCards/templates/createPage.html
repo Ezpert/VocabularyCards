@@ -1,34 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
 <head>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/createPage.css'%}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
 
 
-    <form action="{% url 'home' %}" method="get">
-        <button type="submit"><--</button>
 
-    </form>
-
-    <form action= "{% url 'addCard'%}"  method="post">
-        {% csrf_token %}
-        {{f_form.as_p}}
-        <input type="hidden" name="f_form" value="f_form">
-        <button type="submit">Submit</button>
-    </form>
-    <form action= "{% url 'addCard'%}" method="post">
-        {% csrf_token %}
-        {{e_form.as_p}}
-         <input type="hidden" name="e_form" value="e_form">
-        <button type="submit">Submit</button>
-    </form>
+    <div class="container">
 
 
 
 
+        <form action="{% url 'home' %}" method="get">
+            <button class="back-button" type="submit">
+                  <input type="image" src="{% static 'images/home.svg'%}" style="width: 20px;">
+            </button>
+        </form>
 
+
+        <div id="success-div"><p id="success-message">Saved Successfully!</p> <img id="success-image" src="{% static 'images/save.svg'%}"></div>
+
+
+        <div class="form-div">
+
+            <div class="forms-container" >
+                {% csrf_token %}
+                <div class="form-header"> <h4 class="form-header-text"> Create Your Own Vocabulary Card</h4></div>
+                <div class="border-seperator-div"></div>
+
+                {% for field in f_form %}
+                        <div class="form-group">
+                            <p style="margin: 0;">{{ field }}</p>
+                            <label>{{ field.label|safe }}</label>
+                        </div>
+
+                {% endfor %}
+                <input type="hidden" name="f_form" value="f_form">
+                <button id="create-button" class="button" type="submit">Create</button>
+
+            </div>
+            <form class="forms-container" style="width: 35%;padding-left: 40px;padding-bottom: 22px;"action= "{% url 'addCard'%}" method="post">
+                <div class="form-header"> <h4 class="form-header-text"> Search for a Word </h4></div>
+                <div class="border-seperator-div" style="margin-left: -40px;width: calc(100% +  90px); margin-bottom: 30px;"></div>
+                {% csrf_token %}
+                {{e_form.as_p}}
+                 <input type="hidden" name="e_form" value="e_form">
+                <button class="button" type="submit">Search</button>
+            </form>
+
+        </div>
+    </div>
+
+
+
+
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function(){
+
+        document.getElementById('create-button').addEventListener('click', function(event){
+            console.log("GOOO GOO GAGAG")
+            var word = document.getElementById('id_word').value;
+            var definition = document.getElementById('id_definition').value;
+            var sentence = document.getElementById('id_sentence').value;
+            var form_f = true;
+
+
+
+            console.log(word);
+            console.log(definition);
+            console.log(sentence);
+
+            $.ajax({
+                url: '/addCard/',
+                type: 'POST',
+                data: {
+                    'word' : word,
+                    'definition' : definition,
+                    'f_form' : form_f,
+                    'sentence' : sentence,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    var successMessageElement = document.getElementById('success-div');
+                    var successPElement = document.getElementById('success-message');
+                    successPElement.textContent = 'Saved Successfully!';
+                    successMessageElement.style.display = 'flex';
+
+
+                    setTimeout(function() {
+                            successMessageElement.style.display = 'none';
+                    }, 3000);
+                },
+                error: function(jqXHR, textStatus, errorThrown)
+                {
+                    alert('There was a problem with the request: ' + textStatus + ' - ' + errorThrown);
+                }
+
+
+
+
+
+            })
+
+
+
+        })
+        {
+
+        }
+
+
+
+    });
+
+
+
+</script>
 
 </body>
 </html>

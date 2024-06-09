@@ -1,13 +1,72 @@
-p,h2, button
-{
+p, button, label, input, h1, h2, h3, h4, h5{
     font-family: Montserrat, Arial, serif;
+    color: whitesmoke;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+     transition: background-color 86400s ease-in-out 0s; /* Forces the background to be transparent */
+    -webkit-text-fill-color: whitesmoke !important; /* Sets the font color */
+    font-family: Montserrat, Arial, serif !important; /* Ensures the font family remains consistent */
+}
+input, label {
+    width: 100%;
+}
+html{
+    background: #002244;
+     height: 100vh; /* Full viewport height */
+}
+
+.svg-class
+{
+    fill: currentColor;
+    pointer-events: none;
+    width: 30px;
+    height: 30px;
+    padding: 6px 2px 4px 2px;
+}
+.back-button-form{
+    position: absolute;
+    top: 0.8svh;
+    left: 0.8svh;
+}
+.back-button
+{
+    background: #4255ff;
+    border: none;
+    padding: 2px 20px 1px 18px;
+    border-radius: 5px;
+    transition: all 0.1s ease-in;
+}
+
+.back-button:hover
+{
+    background: #423ed8;
+    cursor: pointer;
 
 }
+.back-button:active
+{
+    background: #14125c;
+}
+
+
+#back-button-svg
+{
+    width: 20px;
+    height: 20px;
+}
+
 .container
 {
-    background: grey;
-    width: 70%;
-    margin: 0 auto;
+
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    height: 99vh; /* Full viewport height */
+    margin: 0; /* Remove default margin */
 
 }
 
@@ -21,29 +80,68 @@ p,h2, button
 
 .def-div
 {
-
+    position: absolute;
 
 }
 
 #definitionCarousel {
+
+    background: #586380;
+    padding: 3px 20px 3px 20px;
+    border-radius: 20px;
+    margin: 0px 0px 10px 0px;
+    border: 3px solid #4255ff;
+
+}
+
+
+.ordered-list-div
+{
+
+    background: #2e3856;
+    border-radius: 20px;
+    min-width: 700px;
+    max-width: 700px;
+    max-height: 400px;
+    min-height: 400px;
+    border: 10px solid #002244;
+    padding: 20px 0px 0px 40px;
+}
+
+#word-text
+{
+    margin: 70px 0px 0px 0px;
+}
+
+.nav-div
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
-    width: 100%;
-    max-width: 600px; /* Adjust as needed */
+}
+.nav-buttons
+{
+    background: none;
+    border: solid 2px #586380;
+    border-radius: 50px;
+    transition: 0.15s ease-in-out;
+
+}
+.hover-effect:hover {
+
+    background: rgba(88, 99, 128, 0.2);
+    cursor: pointer;
 
 }
 
-#definitionCarousel ol {
-    list-style-type: none;
-    padding: 0;
-    min-height: 107px;
-    margin: 0;
+.hover-effect:active
+{
+    background: rgba(88, 99, 128, 0.5);
 }
 
-#definitionCarousel li {
-    display: none;
-    width: 100%;
-}
+#counter
+{
+    margin: 0px 20px 0px 20px;
 
-#definitionCarousel li:first-child {
-    display: block;
 }

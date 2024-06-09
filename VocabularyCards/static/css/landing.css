@@ -1,5 +1,68 @@
-p,h2
+p,h2,h1,button
 {
-    font-family: Montserrat, Arial, serif;    
+    font-family: Montserrat, Arial, serif;
+    color: whitesmoke;
     
+}
+
+html{
+    background: #002244;
+}
+
+.container{
+
+    display: grid;
+    gap: 5rem;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: center;
+    margin: 3%;
+
+}
+
+
+.form-div
+{
+    grid-row-start: 2;
+    grid-column-start: 2;
+    display: flex;
+    justify-content: space-between !important;
+    gap: 5rem;
+}
+
+.button
+{
+    padding: 60px 100px 60px 100px;
+    background: none;
+    border: .125rem solid #586380;
+    min-height: 215px;
+    border-radius: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+    font-size: 1.3rem;
+    white-space: nowrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%; /* Ensures the button takes full width */
+    transition: all 0.15s ease;
+
+}
+.button-image
+{
+    width: 40px;
+
+}
+
+.content-container {
+    display: flex;
+    flex-direction: column; /* Stacks items vertically */
+    align-items: center; /* Center-aligns items horizontally */
+    justify-content: center; /* Center-aligns items vertically */
+}
+
+.button:hover {
+
+    color: #a8b1ff;
+    border-color: #a8b1ff;
+    cursor: pointer;
 }

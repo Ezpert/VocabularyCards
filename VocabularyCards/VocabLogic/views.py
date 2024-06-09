@@ -19,7 +19,7 @@ client = OpenAI(
 
 def chat_completion(
         message,
-        model="gpt-4",
+        model="gpt-3.5-turbo",
         prompt="You are a helpful assistant.",
         temperature=0,
         messages=[],
@@ -32,7 +32,7 @@ def chat_completion(
         # Add the user's message to the messages list
         messages += [{"role": "user", "content": message}]
 
-    # Make an API call to the OpenAI ChatCompletion endpoint with the model and messages
+    print(messages)
 
     # Make an API call to the OpenAI ChatCompletion endpoint with the model and messages
     completion = client.chat.completions.create(
@@ -42,7 +42,13 @@ def chat_completion(
     )
 
     # Extract and return the AI's response from the API response
-    return completion.choices[0].message.content.strip()
+    # Check if completion and completion.choices are not None
+    if completion is not None and completion.choices:
+        print("Completion is not none!")
+        return completion.choices[0].message.content.strip()
+    else:
+        # Handle the case where completion or completion.choices is None
+        return "Error generating response."
 
 
 def ai_example(word=None, definition=None):
@@ -51,7 +57,8 @@ def ai_example(word=None, definition=None):
         You are a Professional Dictionary. You are going to be given a word and a definition with no sentence example and you are
     to make a sentence using the context of the definition. You MUST include the given Word in the sentence response, 
     If you do not use it the example would be considered incorrect! You should respond with nothing but the sentence, meaning do not add
-    any other formatting besides the sentence string.
+    any other formatting besides the sentence string. 
+    # MAKE SURE TO INCLUDE AN EXAMPLE AND DO NOT SIMPLY REPLY WITH NO EXAMPLE PROVIDED
     This is an example of a word and a definition that are without an example:
     Word: ling 
     Definition: Any of various marine food fish, of the genus Molva, resembling the cod
@@ -90,12 +97,18 @@ def ai_example(word=None, definition=None):
         "After years of longing for a child, they finally adopted a boy and proudly introduced him as their son+."
         Reason for being incorrect: The sentence includes a random character i.e '+'. Do not include random characters inside the examples!
         
-        Make sure that the responses given do not include a '+' inside of the sentence unless it makes sense grammatically!
+        Word: mama
+        Definition: (hypocoristic, usually childish) Mother, female parent.
+        "No example provided"
         
+    
+        Make sure that the responses given do not include a '+' inside of the sentence unless it makes sense grammatically!
+        Make sure that all examples that you give have content and DO NOT REPLY WITH NO EXAMPLE PROVIDED!    
     """
     outputs = {}
     message = f"Word: {word} + \n Definition: {definition}"
-    response = chat_completion(message, prompt=prompt, model='gpt-4')
+    response = chat_completion(message, prompt=prompt, model='gpt-3.5-turbo')
+
 
     print(response)
     return response
@@ -140,27 +153,38 @@ def createPage(request):
 
 def addCard(request):
     if request.method == 'POST':
-
+        print("Valid method!")
         if 'f_form' in request.POST:
 
+            print("Form f found!")
             form_f = CardFullForm(request.POST)
             if form_f.is_valid():
-                # Use get_or_create to find or create a Card instance with the word from the form
-                new_card, created = Card.objects.get_or_create(
-                    word=form_f.cleaned_data['word'].lower()
-                )
+                print("Valid form!")
+                try:
+                    print("Working!")
+                    # Use get_or_create to find or create a Card instance with the word from the form
+                    new_card, created = Card.objects.get_or_create(
+                        word=form_f.cleaned_data['word'].lower()
+                    )
 
-                # Create a new Card instance with the word from the form
-                if created:
-                    new_card.save()
+                    # Create a new Card instance with the word from the form
+                    if created:
+                        new_card.save()
 
-                definition_text = form_f.cleaned_data['definition']
-                sentence_use = form_f.cleaned_data['sentence']
-                new_definition = Definition(card=new_card, definition_text=definition_text, sentence_use=sentence_use)
-                new_definition.save()
+                    definition_text = form_f.cleaned_data['definition']
+                    sentence_use = form_f.cleaned_data['sentence']
+                    new_definition = Definition(card=new_card, definition_text=definition_text,
+                                                sentence_use=sentence_use)
+                    new_definition.save()
+                    return JsonResponse({'status': 'success'}, status=200)
+                except Definition.DoesNotExist:
 
-                return redirect('home')
+                    return JsonResponse({'status': 'Definition not found'}, status=404)
+                except Card.DoesNotExist:
+                    return JsonResponse({'status': 'Card not found'}, status=404)
+
         elif 'e_form' in request.POST:
+            print("Form e found!")
             form_e = CardEmptyForm(request.POST)
             if form_e.is_valid():
                 # Attempt to get or create the card
@@ -199,6 +223,11 @@ def addCard(request):
                     return redirect('createPage')
             else:
                 return render(request, 'landing.html')
+        else:
+            print("Form f or e not found!")
+            return JsonResponse({'status': 'Form not found'}, status=404)
+    else:
+        return HttpResponseNotAllowed(['POST'])
 
 
 def searchAdd(request):

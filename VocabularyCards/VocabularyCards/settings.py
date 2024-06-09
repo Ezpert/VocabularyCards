@@ -83,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'vocab_database',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'rIu5^e0NsYH1',
         'HOST': 'localhost',
         'PORT': '3306',
 

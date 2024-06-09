@@ -1,40 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/viewCards.css'%}">
 </head>
 <body>
 
-    {% if cards %}
-
-     <form action="{% url 'home' %}" method="get">
-        <button type="submit"><--</button>
-
-    </form>
-    <div>
-                {% for card in cards %}
-            <div>
-                <h2><a href="{% url 'viewCard' card_id=card.id %}">{{ card.word }}</a></h2>
-            </div>
-        {% endfor %}
-
-    </div>
-    {% else %}
-
-    <form action="{% url 'home' %}" method="get">
-        <button type="submit"><--</button>
-
-    </form>
+ <form action="{% url 'home' %}" method="get">
+        <button class="back-button" type="submit">
+              <input type="image" src="{% static 'images/home.svg'%}" style="width: 20px;">
+        </button>
+ </form>
 
 
-       <form action="{% url 'createPage' %}" method="get">
-        <button type="submit">Create Cards</button>
-    </form>
-    {% endif %}
+<div class="container-div">
+
+        {% if cards %}
+
+        <div class="card-info-div fade-styles" id="card-info-div">
+            <h1 class="header">All Cards</h1>
+            <ol class="ordered-list-div">
+            {% for card in cards %}
+                <a href="{% url 'viewCard' card_id=card.id %}">
+                    <li class='list-div'>
+                        <div class="list-info-div">
+                            <h2 class="list-word">{{ card.word }}</h2>
+                            {% if card.definitions.count > 1 %}
+                                <div class="list-def"> <h5 class="def-text">{{ card.definitions.count }} definitions</h5></div>
+                            {% else %}
+                                <div class="list-def"> <h5 class="def-text">{{ card.definitions.count }} definition</h5></div>
+                            {% endif %}
+                        </div>
+                        <div class="bar-div" id="bar-div-{{ forloop.counter }}"></div>
+                    </li>
+                </a>
+            {% endfor %}
+            </ol>
+        </div>
+
+        {% else %}
+
+        <form action="{% url 'home' %}" method="get">
+                <button class="back-button" type="submit">
+                      <input type="image" src="{% static 'images/home.svg'%}" style="width: 20px;">
+                </button>
+        </form>
+
+
+        <form action="{% url 'createPage' %}" method="get">
+            <button type="submit">Create Cards</button>
+        </form>
+        {% endif %}
+
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
 
 
 
+    });
+
+
+</script>
 
 </body>
 </html>
