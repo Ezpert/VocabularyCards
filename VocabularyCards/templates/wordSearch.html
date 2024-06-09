@@ -80,7 +80,7 @@
                       <use xlink:href="#arrow-left" />
                     </svg>
                 </button>
-                <h4 id="counter">  / {{ definitions_and_examples|length }}</h4>
+                <h4 id="counter">0  / {{ definitions_and_examples|length }}</h4>
                 <button class="nav-buttons hover-effect" id="nextBtn">
                     <svg class="svg-class">
                         <use xlink:href="#arrow-right"/>
@@ -199,9 +199,9 @@
                 if(i === index){
                     definition.style.display = 'block';
                     shownDefinitionId = definition.id;
-                    var currentIndexNew = currentIndex + 1;
-                    document.getElementById('counter').textContent = document.getElementById('counter').textContent.replace(/^./, currentIndexNew);
-                    checkConditionAndMakeAjaxCall(definition);
+                    let currentIndexNew = index + 1;
+                    document.getElementById('counter').textContent = currentIndexNew + ' / ' + definitions.length;
+                    //checkConditionAndMakeAjaxCall(definition);
 
                 } else{
                     definition.style.display = 'none';

@@ -24,12 +24,6 @@ html{
     margin: 0; /* Remove default margin */
 }
 
-.nav-div
-{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
 .back-button-form{
     position: absolute;
@@ -146,10 +140,16 @@ html{
 
 .hover-effect:hover {
 
-    background: rgba(88, 99, 128, 0.3);
+    background: rgba(88, 99, 128, 0.2);
     cursor: pointer;
 
 }
+
+.hover-effect:active
+{
+    background: rgba(88, 99, 128, 0.5);
+}
+
 
 
 
@@ -167,6 +167,12 @@ html{
 
 }
 
+.nav-div
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .nav-buttons
 {
     background: none;
