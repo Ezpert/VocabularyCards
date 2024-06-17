@@ -31,12 +31,20 @@
         <symbol viewBox="0 0 24 24" id="garbage" xmlns="http://www.w3.org/2000/svg">
             <path d="M17.009 9.002V20H6.999V9.002h10.01Zm-1.716-6.71A1 1 0 0 0 14.586 2H9.414a1 1 0 0 0-.707.293L8 3H4a1 1 0 0 0 0 2h16a1 1 0 1 0 0-2h-4l-.707-.707ZM19 8a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1v11.778C5 21 6.443 22 7.857 22h8.286C17.557 22 19 21 19 19.778V8Z"></path>
         </symbol>
+        <symbol viewBox="0 0 24 24" id="close-x" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M19.645 4.367a1.209 1.209 0 0 0-1.711 0L12 10.222 6.066 4.355a1.208 1.208 0 0 0-1.711 0 1.208 1.208 0 0 0 0 1.711L10.222 12l-5.867 5.934a1.209 1.209 0 0 0 0 1.711 1.209 1.209 0 0 0 1.711 0L12 13.778l5.934 5.867a1.209 1.209 0 0 0 1.711 0 1.209 1.209 0 0 0 0-1.711L13.778 12l5.867-5.934a1.216 1.216 0 0 0 0-1.699Z"></path>
+        </symbol>
     </svg>
 
 
     {% load my_filters %}
 
     <div class="container" >
+
+
+
+
+
 
     <form class="back-button-form" action="{% url 'viewCards' %}" method="get">
             <button class="back-button" type="submit">
@@ -46,7 +54,43 @@
             </button>
     </form>
 
-        {% if card %}
+    {% if card %}
+    <div id='modal-backdrop' class="modalBackdrop"></div>
+        <div id="delete-confirmation-modal" class="delete-confirmation-div">
+
+            <button id="modal-close-btn"class="modal-close-button ordered-list-buttons hover-effect">
+                <svg id="modal-close-svg" class="svg-class">
+                    <use xlink:href="#close-x"></use>
+                </svg>
+            </button>
+
+            <div id="modal-text-div">
+                <h2 class="modal-confirmation-header">
+                    <span id="modal-confirmation-header-text">Delete this Word?</span>
+                </h2>
+                <h3 id="modal-card-word">
+                    {{ card.word }}
+                </h3>
+                <p id="modal-confirmation-text-1">
+                    You are about to delete this card and all of its definitions.
+                </p>
+                <p id="modal-confirmation-text-2"style="font-weight: bold;">
+                    Are you absolutely positive? There's no undo.
+                </p>
+            </div>
+            <div id="modal-space-div">
+
+            </div>
+            <div id="modal-footer-div">
+                <button class="modal-buttons" id="modal-cancel-btn">
+                    <span id="modal-cancel-btn-text">Cancel</span>
+                </button>
+                <button class="modal-buttons" id="modal-confirm-delete-btn">
+                   <span id="modal-confirm-delete-btn-text"> Yes, delete card </span>
+                </button>
+            </div>
+        </div>
+
 
          <div id="success-message" style="display: none;"></div>
 
@@ -57,6 +101,16 @@
             <div id="definitionCarousel">
 
                 <ol class="ordered-list-div">
+                <button class="ordered-list-buttons hover-effect" id="edit-btn">
+                    <svg id="edit-btn-svg"  class="svg-class svg-edit-class">
+                        <use xlink:href="#edit"></use>
+                    </svg>
+                </button>
+                <button class="ordered-list-buttons hover-effect" id="delete-btn" >
+                    <svg id="delete-btn-svg" class="svg-class">
+                        <use xlink:href="#garbage"></use>
+                    </svg>
+                </button>
 
                     <div class="info-header-div">
                         <p id="card" style="display:none;">{{ card }}</p>
@@ -96,19 +150,8 @@
                         <use xlink:href="#arrow-right"/>
                     </svg>
                 </button>
-                <button class="nav-buttons hover-effect" id="edit-btn">
-                    <svg class="svg-class">
-                        <use xlink:href="#edit">
-                        </use>
-                    </svg>
-                </button>
-                <button class=""id="submit-btn" style="display: none;">Save Changes</button>
-                <button id="cancel-btn" style="display: none;"> Cancel! </button>
-                <button class="nav-buttons hover-effect" id="delete-btn" >
-                    <svg class="svg-class">
-                        <use xlink:href="#garbage"></use>
-                    </svg>
-                </button>
+
+
         </div>
         </div>
 
@@ -136,21 +179,21 @@
 <script>
 
     document.addEventListener('DOMContentLoaded', function(){
-        var definitions = document.querySelectorAll('#definitionCarousel li');
+        let definitions = document.querySelectorAll('#definitionCarousel li');
 
 
-        var currentIndex = 0;
-        var editingDef = false;
-        var editButton = document.getElementById('edit-btn');
-        var originalWordText, originalDefinition, originalSentence;
+        let currentIndex = 0;
+        let editingDef = false;
+        let editButton = document.getElementById('edit-btn');
+        let originalWordText, originalDefinition, originalSentence;
 
 
         function addQuotesToSentenceUse() {
-            var definitions = document.querySelectorAll('#definitionCarousel li');
+            let definitions = document.querySelectorAll('#definitionCarousel li');
             definitions.forEach(function(definition) {
-                var sentenceUseElement = definition.querySelector('p[style="font-style: italic;"]');
+                let sentenceUseElement = definition.querySelector('p[style="font-style: italic;"]');
                 if (sentenceUseElement) {
-                    var sentenceUseText = sentenceUseElement.textContent;
+                    let sentenceUseText = sentenceUseElement.textContent;
                     // Check if the sentence use does not start and end with quotation marks
                     if (!(sentenceUseText.startsWith('"') && sentenceUseText.endsWith('"')) && !(sentenceUseText.length === 0)) {
                         // Add quotation marks around the sentence use
@@ -160,7 +203,7 @@
         }
 
         function showDefinition(index){
-            var shownDefinitionId; // Variable to store the ID of the definition that will be shown
+            let shownDefinitionId; // letiable to store the ID of the definition that will be shown
 
             definitions.forEach(function(definition, i){
                 // Determine if this definition should be shown
@@ -169,6 +212,7 @@
                     shownDefinitionId = definition.id; // Store the ID of the definition that will be shown
                     let currentIndexNew = index + 1;
                     document.getElementById('counter').textContent = currentIndexNew + ' / ' + definitions.length;
+
                 } else {
                     definition.style.display = 'none';
                 }
@@ -187,7 +231,7 @@
                currentIndex = currentIndex > 0 ? currentIndex - 1 : definitions.length - 1;
                console.log(currentIndex);
                showDefinition(currentIndex);
-               var defId = document.getElementById('currentDefinitionId').value;
+               let defId = document.getElementById('currentDefinitionId').value;
                console.log("Updated ID: " + defId);
 
                }
@@ -204,7 +248,7 @@
                    currentIndex = (currentIndex + 1) % definitions.length;
                    console.log(currentIndex);
                    showDefinition(currentIndex);
-                   var defId = document.getElementById('currentDefinitionId').value;
+                   let defId = document.getElementById('currentDefinitionId').value;
                    console.log("Updated ID: " + defId);
                }else
                {
@@ -214,147 +258,158 @@
            }
            else if(event.target.matches('#edit-btn'))
            {
-               editingDef = true;
-               var defId = document.getElementById('currentDefinitionId').value;
-               var formattedId = defId.replace(/[^0-9]/g, "");
-               var wordText = document.getElementById('word-text');
-               var definition = document.getElementById('def-text-' + formattedId);
-               var sentence = document.getElementById('sentence-use-' + formattedId);
-               originalWordText = wordText.textContent;
-               originalDefinition = definition.textContent;
-               originalSentence = sentence.textContent;
+               if(editingDef === false)
+               {
+                   editingDef = true;
+                   let defId = document.getElementById('currentDefinitionId').value;
+                   let formattedId = defId.replace(/[^0-9]/g, "");
+                   let wordText = document.getElementById('word-text');
+                   let definition = document.getElementById('def-text-' + formattedId);
+                   let sentence = document.getElementById('sentence-use-' + formattedId);
+                   let button = document.getElementById('edit-btn');
+                   let picture = button.querySelector('svg use');
+                   originalWordText = wordText.textContent;
+                   originalDefinition = definition.textContent;
+                   originalSentence = sentence.textContent;
 
 
 
-               if (wordText && definition && sentence) {
-                   wordText.contentEditable = wordText.contentEditable === 'false' ? 'true' : 'false';
-                   definition.contentEditable = definition.contentEditable === 'false' ? 'true' : 'false';
-                   sentence.contentEditable = sentence.contentEditable === 'false' ? 'true' : 'false';
-               } else {
-                   console.error('One or more elements could not be found.');
+                   if (wordText && definition && sentence) {
+                       wordText.contentEditable = wordText.contentEditable === 'false' ? 'true' : 'false';
+                       definition.contentEditable = definition.contentEditable === 'false' ? 'true' : 'false';
+                       sentence.contentEditable = sentence.contentEditable === 'false' ? 'true' : 'false';
+                   } else {
+                       console.error('One or more elements could not be found.');
+                   }
+
+                   wordText.classList.add('edit-text');
+                   definition.classList.add('edit-text');
+                   sentence.classList.add('edit-text');
+                   picture.style.fill = 'yellow';
+
+
+               }
+               else
+               {
+
+                   let defId = document.getElementById('currentDefinitionId').value;
+                   let formattedId = defId.replace(/[^0-9]/g, "");
+                   let wordText = document.getElementById('word-text').textContent;
+                   let button = document.getElementById('edit-btn');
+                   let picture = button.querySelector('svg use');
+
+                   //I was getting this error
+                   // line 261, in query
+                   //  _mysql.connection.query(self, query)
+                   //  django.db.utils.DataError: (1406, "Data too long for column 'sentence_use' at row 1")
+                   // Basically the .textContent was getting all the text from the paragraph including all the white space
+                   // and when it was put into the database it would include all of the white space as well.
+                   // So we used .replace(/\s+/g, ' ').trim() to remove all of the whitespace from the text so that
+                   // essentially it only gets the text that we want and condenses it all down to something that we
+                   // can easily put into the database without any issues.
+
+                   let definitionText = document.getElementById('def-text-' + formattedId).textContent.replace(/\s+/g, ' ').trim();
+                   let sentenceText = document.getElementById('sentence-use-' + formattedId).textContent.replace(/\s+/g, ' ').trim();
+                   let cardId = "{{ card.id }}";
+
+
+                   $.ajax({
+                       url: '/' + cardId + '/editWord/',
+                       type: 'POST',
+                       data: {
+                           'card-id': cardId,
+                           'def-id': formattedId,
+                           'word-text': wordText,
+                           'def-text': definitionText,
+                           'sentence-use': sentenceText,
+                           'csrfmiddlewaretoken': '{{ csrf_token }}'
+                       },
+                        success: function(response){
+                            let successMessageElement = document.getElementById('success-message');
+
+
+                            successMessageElement.textContent = 'Saved Successfully!';
+                            successMessageElement.style.display = 'block';
+                            successMessageElement.classList.add('success');
+
+                            setTimeout(function(){
+                                successMessageElement.style.display = 'none';
+                                successMessageElement.textContent = '';
+
+                            }, 3000);
+
+
+                            editingDef = false;
+                            document.getElementById('word-text').contentEditable = document.getElementById('word-text').contentEditable === 'true' ? 'false' : 'true';
+                            document.getElementById('def-text-' + formattedId).contentEditable = document.getElementById('def-text-' + formattedId).contentEditable === 'true' ? 'false' : 'true';
+                            document.getElementById('sentence-use-' + formattedId).contentEditable = document.getElementById('sentence-use-' + formattedId).contentEditable === 'true' ? 'false' : 'true';
+                            picture.style.fill = 'currentColor';
+                            addQuotesToSentenceUse();
+
+                        },
+                        error: function(jqXHR, textStatus, errorThrown){
+                           alert('There was a problem with the request: ' + textStatus + ' - ' + errorThrown);
+                        }
+               });
+
                }
 
-
-               editButton.style.display = editButton.style.display === 'none' ? 'inline' : 'none';
-               document.getElementById('cancel-btn').style.display = document.getElementById('cancel-btn').style.display === 'inline' ? 'none' : 'inline';
-               document.getElementById('submit-btn').style.display = document.getElementById('submit-btn').style.display === 'inline' ? 'none' : 'inline';
-
-
-           }
-           else if(event.target.matches('#cancel-btn')) {
-
-
-               editingDef = false;
-               var defId = document.getElementById('currentDefinitionId').value;
-               var formattedId = defId.replace(/[^0-9]/g, "");
-               var wordText = document.getElementById('word-text');
-               var definition = document.getElementById('def-text-' + formattedId);
-               var sentence = document.getElementById('sentence-use-' + formattedId);
-               wordText.textContent = originalWordText;
-               definition.textContent = originalDefinition;
-               sentence.textContent = originalSentence;
-
-
-               wordText.contentEditable = wordText.contentEditable === 'true' ? 'false' : 'true';
-               definition.contentEditable = definition.contentEditable === 'true' ? 'false' : 'true';
-               sentence.contentEditable = sentence.contentEditable === 'true' ? 'false' : 'true';
-               editButton.style.display = editButton.style.display === 'none' ? 'inline' : 'none';
-               document.getElementById('cancel-btn').style.display = document.getElementById('cancel-btn').style.display === 'inline' ? 'none' : 'inline';
-               document.getElementById('submit-btn').style.display = document.getElementById('submit-btn').style.display === 'inline' ? 'none' : 'inline';
-
-
-
-           }
-           else if(event.target.matches('#submit-btn'))
-           {
-               var defId = document.getElementById('currentDefinitionId').value;
-               var formattedId = defId.replace(/[^0-9]/g, "");
-               var wordText = document.getElementById('word-text').textContent;
-
-               //I was getting this error
-               // line 261, in query
-               //  _mysql.connection.query(self, query)
-               //  django.db.utils.DataError: (1406, "Data too long for column 'sentence_use' at row 1")
-               // Basically the .textContent was getting all the text from the paragraph including all the white space
-               // and when it was put into the database it would include all of the white space as well.
-               // So we used .replace(/\s+/g, ' ').trim() to remove all of the whitespace from the text so that
-               // essentially it only gets the text that we want and condenses it all down to something that we
-               // can easily put into the database without any issues.
-
-               var definitionText = document.getElementById('def-text-' + formattedId).textContent.replace(/\s+/g, ' ').trim();
-               var sentenceText = document.getElementById('sentence-use-' + formattedId).textContent.replace(/\s+/g, ' ').trim();
-               var cardId = "{{ card.id }}";
-
-
-               $.ajax({
-                   url: '/' + cardId + '/editWord/',
-                   type: 'POST',
-                   data: {
-                       'card-id': cardId,
-                       'def-id': formattedId,
-                       'word-text': wordText,
-                       'def-text': definitionText,
-                       'sentence-use': sentenceText,
-                       'csrfmiddlewaretoken': '{{ csrf_token }}'
-                   },
-                    success: function(response){
-                        var successMessageElement = document.getElementById('success-message');
-
-                        successMessageElement.textContent = 'Saved Successfully!';
-                        successMessageElement.style.display = 'block';
-                        successMessageElement.classList.add('success');
-
-                        setTimeout(function(){
-                            successMessageElement.style.display = 'none';
-                            successMessageElement.textContent = '';
-
-                        }, 3000);
-
-
-                        editingDef = false;
-                        document.getElementById('word-text').contentEditable = document.getElementById('word-text').contentEditable === 'true' ? 'false' : 'true';
-                        document.getElementById('def-text-' + formattedId).contentEditable = document.getElementById('def-text-' + formattedId).contentEditable === 'true' ? 'false' : 'true';
-                        document.getElementById('sentence-use-' + formattedId).contentEditable = document.getElementById('sentence-use-' + formattedId).contentEditable === 'true' ? 'false' : 'true';
-                        document.getElementById('edit-btn').style.display = document.getElementById('edit-btn').style.display === 'none' ? 'inline' : 'none';
-                        document.getElementById('cancel-btn').style.display = document.getElementById('cancel-btn').style.display === 'inline' ? 'none' : 'inline';
-                        document.getElementById('submit-btn').style.display = document.getElementById('submit-btn').style.display === 'inline' ? 'none' : 'inline';
-                        addQuotesToSentenceUse();
-
-                    },
-                    error: function(jqXHR, textStatus, errorThrown){
-                       alert('There was a problem with the request: ' + textStatus + ' - ' + errorThrown);
-                    }
-               });
 
            }
            else if(event.target.matches('#delete-btn'))
            {
-               var cardId = "{{ card.id }}";
+               let cardId = "{{ card.id }}";
+               let modal = document.getElementById('delete-confirmation-modal');
+               let exitbtn = document.getElementById('modal-close-btn');
+               let cancelbtn = document.getElementById('modal-cancel-btn');
+               let confirmdeletebtn = document.getElementById('modal-confirm-delete-btn');
+               let modalbackdrop = document.getElementById('modal-backdrop');
+
+               modal.classList.add('show');
+               modal.style.display = 'block'; // Ensure the modal is displayed
+               modalbackdrop.classList.add('show');
+               modalbackdrop.style.display = 'block';
+
+               function closeModal(){
+                   modal.classList.add('hide');
+                   modal.addEventListener('animationend', function handleAnimationEnd(){
+                       modal.classList.remove('show');
+                       modal.classList.remove('hide');
+                       modalbackdrop.classList.remove('show');
+
+                       modal.style.display = 'none';
+                       modalbackdrop.style.display = 'none';
+                       modal.removeEventListener('animationend', handleAnimationEnd);
+                   })
+               }
+
+               exitbtn.onclick = closeModal;
+               cancelbtn.onclick = closeModal;
+               confirmdeletebtn.onclick = function(){
+                   console.log("Delete!")
+                   $.ajax({
+                       url: '/deleteCard/' + cardId + '/',
+                       type: 'POST',
+                       data:{
+                           'card_id': cardId,
+                           'csrfmiddlewaretoken': '{{ csrf_token }}',
+                       },
+                       success: function(response) {
+                             if (response.redirect_url) {
+                                window.location.href = response.redirect_url;
+                             }
+
+                       },
+                       error: function(jqXHR, textStatus, errorThrown){
+                           alert('There was a problem with the request: ' + textStatus + ' - ' + errorThrown)
+                       }
 
 
-               $.ajax({
-                   url: '/deleteCard/' + cardId + '/',
-                   type: 'POST',
-                   data:{
-                       'card_id': cardId,
-                       'csrfmiddlewaretoken': '{{ csrf_token }}',
-                   },
-                   success: function(response)
-                   {
-                         if (response.redirect_url) {
-                            window.location.href = response.redirect_url;
-                         }
 
-                   },
-                   error: function(jqXHR, textStatus, errorThrown){
-                       alert('There was a problem with the request: ' + textStatus + ' - ' + errorThrown)
-                   }
+                   })
 
 
-
-               })
-
-
+               }
 
            }
 

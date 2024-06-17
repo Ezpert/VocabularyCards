@@ -8,16 +8,16 @@
 </head>
 <body>
 
- <form action="{% url 'home' %}" method="get">
-        <button class="back-button" type="submit">
-              <input type="image" src="{% static 'images/home.svg'%}" style="width: 20px;">
-        </button>
- </form>
 
 
 <div class="container-div">
 
         {% if cards %}
+         <form action="{% url 'home' %}" method="get">
+                <button class="back-button" type="submit">
+                      <input type="image" src="{% static 'images/home.svg'%}" style="width: 20px;">
+                </button>
+         </form>
 
         <div class="card-info-div fade-styles" id="card-info-div">
             <h1 class="header">All Cards</h1>
@@ -55,17 +55,5 @@
         {% endif %}
 
 </div>
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function(){
-
-
-
-    });
-
-
-</script>
-
 </body>
 </html>
