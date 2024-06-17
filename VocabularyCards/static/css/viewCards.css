@@ -136,6 +136,7 @@ html{
     position: absolute;
     top: 1rem;
     left: 1.5rem;
+    min-width: 150px;
 }
 
 .list-word
@@ -146,12 +147,14 @@ html{
    opacity: 0.7;
 }
 
+
 .list-def
 {
     background: #2e3856;
     padding: 10px 20px 10px 20px;
     border-radius: 20px;
     transition: 0.15s ease-in-out;
+    position: absolute;
 
 }
 
